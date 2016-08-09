@@ -1,7 +1,7 @@
 # Личный проект «Код и Магия» [![Build status][travis-image]][travis-url] [![Dependency status][dependency-image]][dependency-url]
 
 * Студент: [Alexey Komarov](https://up.htmlacademy.ru/javascript/6/user/178804).
-* Наставник: `Неизвестно`.
+* Наставник: Николай Яшин.
 
 ---
 
