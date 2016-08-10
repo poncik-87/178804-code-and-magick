@@ -395,19 +395,56 @@ window.Game = (function() {
      * Отрисовка экрана паузы.
      */
     _drawPauseScreen: function() {
+      var canvas = document.querySelector('canvas');
+      var ctx = canvas.getContext('2d');
+
+      ctx.save();
+
+      ctx.fillStyle = '#FFFFFF';
+
+      ctx.beginPath();
+      ctx.moveTo(400, 150);
+      ctx.lineTo(400, 100);
+      ctx.lineTo(500, 50);
+      ctx.lineTo(650, 100);
+      ctx.lineTo(600, 200);
+      ctx.lineTo(400, 150);
+      ctx.closePath();
+
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
+      ctx.shadowOffsetX = 10;
+      ctx.shadowOffsetY = 10;
+
+      ctx.fill();
+
+      ctx.restore();
+
+      ctx.font = '16px PT Mono';
+
+      var message = [];
       switch (this.state.currentStatus) {
         case Verdict.WIN:
-          console.log('you have won!');
+          message.push('Hey!');
+          message.push('You won!');
           break;
         case Verdict.FAIL:
-          console.log('you have failed!');
+          message.push('Sorry<');
+          message.push('You failed!');
           break;
         case Verdict.PAUSE:
-          console.log('game is on pause!');
+          message.push('Game paused,');
+          message.push('Relax.');
           break;
         case Verdict.INTRO:
-          console.log('welcome to the game! Press Space to start');
+          message.push('Welcome to the game!');
+          message.push('Press Space to start.');
           break;
+      }
+
+      var textposY = 120;
+      for (var i = 0; i < message.length; i++) {
+        ctx.fillText(message[i], 420, textposY);
+        textposY += 20;
       }
     },
 
