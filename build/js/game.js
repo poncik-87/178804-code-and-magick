@@ -395,12 +395,12 @@ window.Game = (function() {
      * Отрисовка экрана паузы.
      */
     _drawPauseScreen: function() {
-      function drawMessage(basePoint, message, ctx) {
-        if (typeof basePoint.x !== 'number' || typeof basePoint.y !== 'number' ||
-            typeof ctx === 'undefined') {
-          return;
-        }
+      if (!this.ctx instanceof CanvasRenderingContext2D) {
+        return;
+      }
 
+      //отрисовка сообщения
+      function drawMessage(basePoint, message, ctx) {
         ctx.save();
 
         ctx.fillStyle = '#FFFFFF';
@@ -425,16 +425,13 @@ window.Game = (function() {
         ctx.font = '16px PT Mono';
         var textposY = basePoint.y - 30;
         var textposX = basePoint.x + 20;
-        if (Array.isArray(message)) {
-          for (var i = 0; i < message.length; i++) {
-            ctx.fillText(message[i], textposX, textposY);
-            textposY += 20;
-          }
-        } else if (typeof message === 'string') {
-          ctx.fillText(message, textposX, textposY);
+        for (var i = 0; i < message.length; i++) {
+          ctx.fillText(message[i], textposX, textposY);
+          textposY += 20;
         }
       }
 
+      //выбор текста в зависимости от сценария
       var message = [];
       switch (this.state.currentStatus) {
         case Verdict.WIN:
@@ -455,7 +452,7 @@ window.Game = (function() {
           break;
       }
 
-      drawMessage({'x': 400, 'y': 150}, message, this.ctx);
+      drawMessage({x: 400, y: 150}, message, this.ctx);
     },
 
     /**
