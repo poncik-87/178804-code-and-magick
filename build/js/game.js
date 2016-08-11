@@ -395,20 +395,64 @@ window.Game = (function() {
      * Отрисовка экрана паузы.
      */
     _drawPauseScreen: function() {
+      if (!this.ctx instanceof CanvasRenderingContext2D) {
+        return;
+      }
+
+      //отрисовка сообщения
+      function drawMessage(basePoint, message, ctx) {
+        ctx.save();
+
+        ctx.fillStyle = '#FFFFFF';
+
+        ctx.beginPath();
+        ctx.moveTo(basePoint.x, basePoint.y);
+        ctx.lineTo(basePoint.x, basePoint.y - 50);
+        ctx.lineTo(basePoint.x + 100, basePoint.y - 100);
+        ctx.lineTo(basePoint.x + 250, basePoint.y - 50);
+        ctx.lineTo(basePoint.x + 200, basePoint.y + 50);
+        ctx.lineTo(basePoint.x, basePoint.y);
+        ctx.closePath();
+
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
+        ctx.shadowOffsetX = 10;
+        ctx.shadowOffsetY = 10;
+
+        ctx.fill();
+
+        ctx.restore();
+
+        ctx.font = '16px PT Mono';
+        var textposY = basePoint.y - 30;
+        var textposX = basePoint.x + 20;
+        for (var i = 0; i < message.length; i++) {
+          ctx.fillText(message[i], textposX, textposY);
+          textposY += 20;
+        }
+      }
+
+      //выбор текста в зависимости от сценария
+      var message = [];
       switch (this.state.currentStatus) {
         case Verdict.WIN:
-          console.log('you have won!');
+          message.push('Hey!');
+          message.push('You won!');
           break;
         case Verdict.FAIL:
-          console.log('you have failed!');
+          message.push('Sorry<');
+          message.push('You failed!');
           break;
         case Verdict.PAUSE:
-          console.log('game is on pause!');
+          message.push('Game paused,');
+          message.push('Relax.');
           break;
         case Verdict.INTRO:
-          console.log('welcome to the game! Press Space to start');
+          message.push('Welcome to the game!');
+          message.push('Press Space to start.');
           break;
       }
+
+      drawMessage({x: 400, y: 150}, message, this.ctx);
     },
 
     /**
