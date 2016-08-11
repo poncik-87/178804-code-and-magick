@@ -395,31 +395,45 @@ window.Game = (function() {
      * Отрисовка экрана паузы.
      */
     _drawPauseScreen: function() {
-      var canvas = document.querySelector('canvas');
-      var ctx = canvas.getContext('2d');
+      function drawMessage(basePoint, message, ctx) {
+        if (typeof basePoint.x !== 'number' || typeof basePoint.y !== 'number' ||
+            typeof ctx === 'undefined') {
+          return;
+        }
 
-      ctx.save();
+        ctx.save();
 
-      ctx.fillStyle = '#FFFFFF';
+        ctx.fillStyle = '#FFFFFF';
 
-      ctx.beginPath();
-      ctx.moveTo(400, 150);
-      ctx.lineTo(400, 100);
-      ctx.lineTo(500, 50);
-      ctx.lineTo(650, 100);
-      ctx.lineTo(600, 200);
-      ctx.lineTo(400, 150);
-      ctx.closePath();
+        ctx.beginPath();
+        ctx.moveTo(basePoint.x, basePoint.y);
+        ctx.lineTo(basePoint.x, basePoint.y - 50);
+        ctx.lineTo(basePoint.x + 100, basePoint.y - 100);
+        ctx.lineTo(basePoint.x + 250, basePoint.y - 50);
+        ctx.lineTo(basePoint.x + 200, basePoint.y + 50);
+        ctx.lineTo(basePoint.x, basePoint.y);
+        ctx.closePath();
 
-      ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
-      ctx.shadowOffsetX = 10;
-      ctx.shadowOffsetY = 10;
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
+        ctx.shadowOffsetX = 10;
+        ctx.shadowOffsetY = 10;
 
-      ctx.fill();
+        ctx.fill();
 
-      ctx.restore();
+        ctx.restore();
 
-      ctx.font = '16px PT Mono';
+        ctx.font = '16px PT Mono';
+        var textposY = basePoint.y - 30;
+        var textposX = basePoint.x + 20;
+        if (Array.isArray(message)) {
+          for (var i = 0; i < message.length; i++) {
+            ctx.fillText(message[i], textposX, textposY);
+            textposY += 20;
+          }
+        } else if (typeof message === 'string') {
+          ctx.fillText(message, textposX, textposY);
+        }
+      }
 
       var message = [];
       switch (this.state.currentStatus) {
@@ -441,11 +455,7 @@ window.Game = (function() {
           break;
       }
 
-      var textposY = 120;
-      for (var i = 0; i < message.length; i++) {
-        ctx.fillText(message[i], 420, textposY);
-        textposY += 20;
-      }
+      drawMessage({'x': 400, 'y': 150}, message, this.ctx);
     },
 
     /**
