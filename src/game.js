@@ -395,12 +395,36 @@ window.Game = (function() {
      * Отрисовка экрана паузы.
      */
     _drawPauseScreen: function() {
+      var message = [];
+
       if (!this.ctx instanceof CanvasRenderingContext2D) {
         return;
       }
 
+      //выбор текста в зависимости от сценария
+      switch (this.state.currentStatus) {
+        case Verdict.WIN:
+          message.push('Hey!');
+          message.push('You won!');
+          break;
+        case Verdict.FAIL:
+          message.push('Sorry<');
+          message.push('You failed!');
+          break;
+        case Verdict.PAUSE:
+          message.push('Game paused,');
+          message.push('Relax.');
+          break;
+        case Verdict.INTRO:
+          message.push('Welcome to the game!');
+          message.push('Press Space to start.');
+          break;
+      }
+
+      drawMessage({x: 400, y: 150}, message, this.ctx);
+
       //отрисовка сообщения
-      function drawMessage(basePoint, message, ctx) {
+      function drawMessage(basePoint, msg, ctx) {
         ctx.save();
 
         ctx.fillStyle = '#FFFFFF';
@@ -425,34 +449,11 @@ window.Game = (function() {
         ctx.font = '16px PT Mono';
         var textposY = basePoint.y - 30;
         var textposX = basePoint.x + 20;
-        for (var i = 0; i < message.length; i++) {
-          ctx.fillText(message[i], textposX, textposY);
+        for (var i = 0; i < msg.length; i++) {
+          ctx.fillText(msg[i], textposX, textposY);
           textposY += 20;
         }
       }
-
-      //выбор текста в зависимости от сценария
-      var message = [];
-      switch (this.state.currentStatus) {
-        case Verdict.WIN:
-          message.push('Hey!');
-          message.push('You won!');
-          break;
-        case Verdict.FAIL:
-          message.push('Sorry<');
-          message.push('You failed!');
-          break;
-        case Verdict.PAUSE:
-          message.push('Game paused,');
-          message.push('Relax.');
-          break;
-        case Verdict.INTRO:
-          message.push('Welcome to the game!');
-          message.push('Press Space to start.');
-          break;
-      }
-
-      drawMessage({x: 400, y: 150}, message, this.ctx);
     },
 
     /**
