@@ -67,6 +67,10 @@ var checkFormRequires = function() {
 reviewName.onchange = checkFormRequires;
 reviewText.onchange = checkFormRequires;
 for (var i = 0; i < reviewMarks.length; i++) {
+  if (reviewMarks[i].checked) {
+    currentMark = reviewMarks[i].value;
+  }
+
   reviewMarks[i].onchange = function() {
     currentMark = this.value;
     checkFormRequires();
