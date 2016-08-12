@@ -6,22 +6,13 @@ window.form = (function() {
    *@type {string}
    */
   var INVISIBLE = 'invisible';
-  /**
-   *@constant
-   *@type {number}
-   */
-  var THRESHOLD_MARK = 3;
 
   var formContainer = document.querySelector('.overlay-container');
   var formCloseButton = document.querySelector('.review-form-close');
-
   var reviewName = document.querySelector('#review-name');
   var reviewText = document.querySelector('#review-text');
-  var reviewFieldsName = document.querySelector('.review-fields-name');
-  var reviewFieldsText = document.querySelector('.review-fields-text');
-  var reviewFieldsHeader = document.querySelector('.review-fields');
-  //var submitButton = document.querySelector('.review-submit');
   var reviewMarks = document.querySelectorAll('.review-form-group-mark input[type=\"radio\"]');
+  //текущее значение оценки отзыва
   var currentMark;
 
   var form = {
@@ -69,6 +60,19 @@ window.form = (function() {
   * Реагирование формы на пользовательские действия
   */
   function checkFormRequires() {
+    /**
+     *Определяет границу оценки, ниже которой обязателен отзыв
+     *@constant
+     *@type {number}
+     */
+    var THRESHOLD_MARK = 3;
+
+    var formObject = document.querySelector('.review-form');
+    var reviewFieldsName = document.querySelector('.review-fields-name');
+    var reviewFieldsText = document.querySelector('.review-fields-text');
+    var reviewFieldsHeader = document.querySelector('.review-fields');
+    var submitButton = document.querySelector('.review-submit');
+
     reviewText.required = currentMark < THRESHOLD_MARK;
 
     //скрытие лейблов, если соответствующие поля валидны
@@ -82,13 +86,13 @@ window.form = (function() {
     } else {
       reviewFieldsText.classList.remove(INVISIBLE);
     }
-    if (reviewName.validity.valid && reviewText.validity.valid) {
+    if (formObject.checkValidity()) {
       reviewFieldsHeader.classList.add(INVISIBLE);
     } else {
       reviewFieldsHeader.classList.remove(INVISIBLE);
     }
 
-    //submitButton.disabled = formContainer.validity.valid;
+    submitButton.disabled = !formObject.checkValidity();
   }
 
   return form;
