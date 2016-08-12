@@ -11,17 +11,16 @@ window.form = (function() {
    *@type {number}
    */
   var THRESHOLD_MARK = 3;
-    
+
   var formContainer = document.querySelector('.overlay-container');
   var formCloseButton = document.querySelector('.review-form-close');
-    
-  var form = document.querySelector('.review-form');
+
   var reviewName = document.querySelector('#review-name');
   var reviewText = document.querySelector('#review-text');
   var reviewFieldsName = document.querySelector('.review-fields-name');
   var reviewFieldsText = document.querySelector('.review-fields-text');
   var reviewFieldsHeader = document.querySelector('.review-fields');
-  var submitButton = document.querySelector('.review-submit');
+  //var submitButton = document.querySelector('.review-submit');
   var reviewMarks = document.querySelectorAll('.review-form-group-mark input[type=\"radio\"]');
   var currentMark;
 
@@ -49,7 +48,7 @@ window.form = (function() {
     evt.preventDefault();
     form.close();
   };
-    
+
   reviewName.oninput = checkFormRequires;
   reviewText.oninput = checkFormRequires;
   for (var i = 0; i < reviewMarks.length; i++) {
@@ -66,8 +65,6 @@ window.form = (function() {
   reviewName.required = true;
   checkFormRequires();
 
-  return form;
-    
   /**
   * Реагирование формы на пользовательские действия
   */
@@ -91,6 +88,8 @@ window.form = (function() {
       reviewFieldsHeader.classList.remove(INVISIBLE);
     }
 
-    //submitButton.disabled = form.validity.valid;
-  };
+    //submitButton.disabled = formContainer.validity.valid;
+  }
+
+  return form;
 })();
