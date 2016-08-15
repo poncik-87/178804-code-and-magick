@@ -44,7 +44,11 @@ window.form = (function() {
     form.close();
   };
 
-  formObject.onsubmit = setFormCookies;
+  formObject.onsubmit = function() {
+    setFormCookies();
+    form.close();
+    return false;
+  };
   reviewName.oninput = checkFormRequires;
   reviewText.oninput = checkFormRequires;
 
@@ -108,12 +112,10 @@ window.form = (function() {
     var markSetted = false;
     var cookieMark = browserCookies.get('review-mark');
     if (cookieMark !== null) {
-      for (i = 0; i < reviewMarks.length; i++) {
-        if (reviewMarks[i].value === cookieMark) {
-          reviewMarks[i].checked = true;
-          markSetted = true;
-          break;
-        }
+      var reviewMark = document.querySelector('#review-mark-' + cookieMark);
+      if (typeof reviewMark !== 'undefined') {
+        reviewMark.checked = true;
+        markSetted = true;
       }
     }
     if (!markSetted) {
@@ -134,6 +136,7 @@ window.form = (function() {
   }
   /**
    * Значение времени жизни cookie
+   * @return {string}
    */
   function getExpiresValue() {
     /**
