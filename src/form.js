@@ -109,18 +109,10 @@ window.form = (function() {
    * Заполнение начальных значений из cookies
    */
   function fillFormFromCookies() {
-    var markSetted = false;
     var cookieMark = browserCookies.get('review-mark');
-    if (cookieMark !== null) {
-      var reviewMark = document.querySelector('#review-mark-' + cookieMark);
-      if (typeof reviewMark !== 'undefined') {
-        reviewMark.checked = true;
-        markSetted = true;
-      }
-    }
-    if (!markSetted) {
-      reviewMarks[2].checked = true;
-    }
+    cookieMark = !cookieMark || cookieMark >= reviewMarks.length ? 2 : cookieMark;
+    var reviewMark = document.querySelector('#review-mark-' + cookieMark);
+    reviewMark.checked = true;
 
     var cookieName = browserCookies.get('review-name');
     reviewName.value = cookieName;
