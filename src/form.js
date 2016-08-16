@@ -109,7 +109,7 @@ window.form = (function() {
    * Заполнение начальных значений из cookies
    */
   function fillFormFromCookies() {
-    var cookieMark = Number.parseInt(browserCookies.get('review-mark'), 10);
+    var cookieMark = parseInt(browserCookies.get('review-mark'), 10);
     cookieMark = cookieMark && cookieMark <= reviewMarks.length ? cookieMark : 3;
     var reviewMark = document.querySelector('#review-mark-' + cookieMark);
     reviewMark.checked = true;
