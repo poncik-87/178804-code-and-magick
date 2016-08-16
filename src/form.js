@@ -109,8 +109,8 @@ window.form = (function() {
    * Заполнение начальных значений из cookies
    */
   function fillFormFromCookies() {
-    var cookieMark = browserCookies.get('review-mark');
-    cookieMark = cookieMark && cookieMark < reviewMarks.length ? cookieMark : 2;
+    var cookieMark = Number.parseInt(browserCookies.get('review-mark'), 10);
+    cookieMark = cookieMark && cookieMark <= reviewMarks.length ? cookieMark : 3;
     var reviewMark = document.querySelector('#review-mark-' + cookieMark);
     reviewMark.checked = true;
 
