@@ -395,7 +395,8 @@ window.Game = (function() {
      * Отрисовка экрана паузы.
      */
     _drawPauseScreen: function() {
-      var message = [];
+      var message;
+      var MESSAGE_WIDTH = 400;
 
       if (!this.ctx instanceof CanvasRenderingContext2D) {
         return;
@@ -404,38 +405,41 @@ window.Game = (function() {
       //выбор текста в зависимости от сценария
       switch (this.state.currentStatus) {
         case Verdict.WIN:
-          message.push('Hey!');
-          message.push('You won!');
+          message = 'Hey! You won!';
+
           break;
         case Verdict.FAIL:
-          message.push('Sorry<');
-          message.push('You failed!');
+          message = 'Sorry, You failed.';
           break;
         case Verdict.PAUSE:
-          message.push('Game paused,');
-          message.push('Relax.');
+          message = 'Game paused. Relax.';
           break;
         case Verdict.INTRO:
-          message.push('Welcome to the game!');
-          message.push('Press Space to start.');
+          message = 'Welcome to the game! Press Space to start.';
           break;
       }
 
-      drawMessage({x: 400, y: 150}, message, this.ctx);
+      var messageArray = breakTextOnLines(message, MESSAGE_WIDTH, this.ctx);
+      drawMessage({x: 400, y: 150, width: MESSAGE_WIDTH}, messageArray, this.ctx);
 
-      //отрисовка сообщения
-      function drawMessage(basePoint, msg, ctx) {
+      /**
+       * Отрисовка сообщения
+       * @param {Object} basePoint
+       * @param {array} msg
+       * @param {Object} ctx
+       */
+      function drawMessage(info, msg, ctx) {
         ctx.save();
 
         ctx.fillStyle = '#FFFFFF';
 
         ctx.beginPath();
-        ctx.moveTo(basePoint.x, basePoint.y);
-        ctx.lineTo(basePoint.x, basePoint.y - 50);
-        ctx.lineTo(basePoint.x + 100, basePoint.y - 100);
-        ctx.lineTo(basePoint.x + 250, basePoint.y - 50);
-        ctx.lineTo(basePoint.x + 200, basePoint.y + 50);
-        ctx.lineTo(basePoint.x, basePoint.y);
+        ctx.moveTo(info.x, info.y);
+        ctx.lineTo(info.x, info.y - 50);
+        ctx.lineTo(info.x + info.width, info.y - 100);
+        ctx.lineTo(info.x + info.width + 150, info.y - 50);
+        ctx.lineTo(info.x + info.width + 100, info.y + 50);
+        ctx.lineTo(info.x, info.y);
         ctx.closePath();
 
         ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
@@ -447,12 +451,104 @@ window.Game = (function() {
         ctx.restore();
 
         ctx.font = '16px PT Mono';
-        var textposY = basePoint.y - 30;
-        var textposX = basePoint.x + 20;
+        var textposY = info.y - 30;
+        var textposX = info.x + 20;
         for (var i = 0; i < msg.length; i++) {
           ctx.fillText(msg[i], textposX, textposY);
           textposY += 20;
         }
+      }
+      /**
+       * Разбивает текст на строки, которые вписываются в ширину
+       * @param {string} text
+       * @param {number} width
+       * @param {Object} ctx
+       * @return {array}
+       */
+      function breakTextOnLines(text, width, ctx) {
+        var tmpText = text;
+        var textLines = [];
+        var textLine = '';
+
+        while (tmpText.length) {
+          //TODO: добавить случай, когда слово из одной буквы и не помещается в ширину
+          var word = shiftWord.call(tmpText);
+          if (checkJoinAbility(textLine, word, width, ctx)) {
+            //есть место вместить слово целиком
+            textLine += word;
+          } else {
+            while (word.length) {
+              var sign = shiftSign.call(word);
+              if (checkJoinAbility(textLine, sign, width, ctx)) {
+                textLine += sign;
+              } else {
+                textLines.push(textLine);
+
+                //добавляем остаток слова вначало текста, чтобы проверить его сначала алгоритма
+                tmpText = word + text;
+                textLine = '';
+
+                break;
+              }
+            }
+          }
+        }
+        if (textLine.length) {
+          textLines.push(textLine);
+        }
+
+        /**
+         * Извлекает первое слово из строки
+         * @param {string} text
+         * @return {string}
+         */
+        function shiftWord() {
+          var retWord;
+          var idx = this.indexOf(' ');
+
+          if (!this.length) {
+            return this;
+          }
+
+          if (idx < 0) {
+            retWord = this;
+          } else {
+            //чтобы извлечь пробел, смещаем индекс на единицу
+            if (idx === 0) {
+              idx = 1;
+            }
+
+            retWord = this.substr(0, idx);
+          }
+
+          this.value = this.replace(retWord, '');
+          return retWord;
+        }
+        /**
+         * Извлекает первую букву из строки
+         * @param {string} text
+         * @return {string}
+         */
+        function shiftSign() {
+          if (!this.length) {
+            return this;
+          }
+
+          var retSign = this.substr(0, 1);
+          this.value = this.replace(retSign, '');
+          return retSign;
+        }
+        /**
+         * Проверяет возможность добавить слово в строку, чтобы она не превысила ширину
+         * @param {string} textLine
+         * @param {string} addedText
+         * @return {boolean}
+         */
+        function checkJoinAbility(baseText, addedText) {
+          return ctx.measureText(addedText).width < width - ctx.measureText(baseText).width;
+        }
+
+        return textLines;
       }
     },
 
