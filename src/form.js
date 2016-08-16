@@ -110,7 +110,7 @@ window.form = (function() {
    */
   function fillFormFromCookies() {
     var cookieMark = browserCookies.get('review-mark');
-    cookieMark = !cookieMark || cookieMark >= reviewMarks.length ? 2 : cookieMark;
+    cookieMark = cookieMark && cookieMark < reviewMarks.length ? cookieMark : 2;
     var reviewMark = document.querySelector('#review-mark-' + cookieMark);
     reviewMark.checked = true;
 
