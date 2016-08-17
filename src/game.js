@@ -434,15 +434,12 @@ window.Game = (function() {
           break;
       }
 
-      this.ctx.font = FONT_SIZE + 'px PT Mono';
-
-      var messageArray = breakTextOnLines(message, MESSAGE_WIDTH - 2 * OFFSET_X, this.ctx);
-      drawMessage({x: 380, y: 50, width: MESSAGE_WIDTH}, messageArray, this.ctx);
+      drawMessage({x: 380, y: 50, width: MESSAGE_WIDTH}, message, this.ctx);
 
       /**
        * Отрисовка сообщения
        * @param {Object} info
-       * @param {Array} msg
+       * @param {string} msg
        * @param {CanvasRenderingContext2D} ctx
        */
       function drawMessage(info, msg, ctx) {
@@ -462,8 +459,11 @@ window.Game = (function() {
          */
         var SHADOW_OFFSET = 10;
 
+        ctx.font = FONT_SIZE + 'px PT Mono';
+
+        var messageArray = breakTextOnLines(msg, MESSAGE_WIDTH - 2 * OFFSET_X, ctx);
         var lineSpacing = Math.round(FONT_SIZE * LINE_SPACING_FACTOR);
-        var height = lineSpacing * msg.length + 2 * OFFSET_Y;
+        var height = lineSpacing * messageArray.length + 2 * OFFSET_Y;
 
         ctx.save();
 
@@ -488,48 +488,47 @@ window.Game = (function() {
 
         var textposY = info.y + FONT_SIZE + OFFSET_Y;
         var textposX = info.x + OFFSET_X;
-        for (var i = 0; i < msg.length; i++) {
-          ctx.fillText(msg[i], textposX, textposY);
+        for (var i = 0; i < messageArray.length; i++) {
+          ctx.fillText(messageArray[i], textposX, textposY);
           textposY += lineSpacing;
-        }
-      }
-
-      /**
-       * Разбивает текст на строки, которые вписываются в ширину
-       * @param {string} text
-       * @param {number} width
-       * @param {CanvasRenderingContext2D} ctx
-       * @return {Array}
-       */
-      function breakTextOnLines(text, width, ctx) {
-        var arText = text.split(' ');
-        var textLines = [];
-        var textLine = arText.shift();
-
-        arText.forEach(function(word) {
-          if (isPossibleToAddWord(textLine, word) || !textLine.length) {
-            //есть место вместить слово целиком, или ширина меньше слова
-            textLine += ' ' + word;
-          } else {
-            textLines.push(textLine);
-            textLine = word;
-          }
-        });
-        if (textLine.length) {
-          textLines.push(textLine);
         }
 
         /**
-         * Проверяет возможность добавить слово в строку, чтобы она не превысила ширину
-         * @param {string} baseText
-         * @param {string} addedText
-         * @return {boolean}
+         * Разбивает текст на строки, которые вписываются в ширину
+         * @param {string} text
+         * @param {number} width
+         * @return {Array}
          */
-        function isPossibleToAddWord(baseText, addedText) {
-          return ctx.measureText(addedText).width < width - ctx.measureText(baseText).width;
-        }
+        function breakTextOnLines(text, width) {
+          var arText = text.split(' ');
+          var textLines = [];
+          var textLine = arText.shift();
 
-        return textLines;
+          arText.forEach(function(word) {
+            if (isPossibleToAddWord(textLine, word) || !textLine.length) {
+              //есть место вместить слово целиком, или ширина меньше слова
+              textLine += ' ' + word;
+            } else {
+              textLines.push(textLine);
+              textLine = word;
+            }
+          });
+          if (textLine.length) {
+            textLines.push(textLine);
+          }
+
+          /**
+           * Проверяет возможность добавить слово в строку, чтобы она не превысила ширину
+           * @param {string} baseText
+           * @param {string} addedText
+           * @return {boolean}
+           */
+          function isPossibleToAddWord(baseText, addedText) {
+            return ctx.measureText(addedText).width < width - ctx.measureText(baseText).width;
+          }
+
+          return textLines;
+        }
       }
     },
 
