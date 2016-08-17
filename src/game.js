@@ -473,6 +473,7 @@ window.Game = (function() {
           textposY += 20;
         }
       }
+
       /**
        * Разбивает текст на строки, которые вписываются в ширину
        * @param {string} text
@@ -481,57 +482,30 @@ window.Game = (function() {
        * @return {Array}
        */
       function breakTextOnLines(text, width, ctx) {
-        var tmpText = text;
+        var arText = text.split(' ');
         var textLines = [];
-        var textLine = '';
+        var textLine = arText.shift();
 
-        while (tmpText.length) {
-          var word = shiftWord();
-          if (checkJoinAbility(textLine, word, width, ctx) || !textLine.length) {
+        arText.forEach(function(word) {
+          if (isPossibleToAddWord(textLine, word) || !textLine.length) {
             //есть место вместить слово целиком, или ширина меньше слова
-            textLine += word;
+            textLine += ' ' + word;
           } else {
             textLines.push(textLine);
             textLine = word;
           }
-        }
+        });
         if (textLine.length) {
           textLines.push(textLine);
         }
 
-        /**
-         * Извлекает первое слово из строки tmpText
-         * @return {string}
-         */
-        function shiftWord() {
-          var retWord;
-          var idx = tmpText.indexOf(' ');
-
-          if (!tmpText.length) {
-            return tmpText;
-          }
-
-          if (idx < 0) {
-            retWord = tmpText;
-          } else {
-            //чтобы извлечь пробел, смещаем индекс на единицу
-            if (idx === 0) {
-              idx = 1;
-            }
-
-            retWord = tmpText.substr(0, idx);
-          }
-
-          tmpText = tmpText.replace(retWord, '');
-          return retWord;
-        }
         /**
          * Проверяет возможность добавить слово в строку, чтобы она не превысила ширину
          * @param {string} baseText
          * @param {string} addedText
          * @return {boolean}
          */
-        function checkJoinAbility(baseText, addedText) {
+        function isPossibleToAddWord(baseText, addedText) {
           return ctx.measureText(addedText).width < width - ctx.measureText(baseText).width;
         }
 
