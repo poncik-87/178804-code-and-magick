@@ -395,7 +395,23 @@ window.Game = (function() {
      * Отрисовка экрана паузы.
      */
     _drawPauseScreen: function() {
-      var message = [];
+      /**
+       *@constant
+       *@type {number}
+       */
+      var MESSAGE_WIDTH = 150;
+      /**
+       *@constant
+       *@type {number}
+       */
+      var OFFSET_X = 20;
+      /**
+       *@constant
+       *@type {number}
+       */
+      var OFFSET_Y = 40;
+
+      var message;
 
       if (!this.ctx instanceof CanvasRenderingContext2D) {
         return;
@@ -404,38 +420,41 @@ window.Game = (function() {
       //выбор текста в зависимости от сценария
       switch (this.state.currentStatus) {
         case Verdict.WIN:
-          message.push('Hey!');
-          message.push('You won!');
+          message = 'Hey! You won!';
+
           break;
         case Verdict.FAIL:
-          message.push('Sorry<');
-          message.push('You failed!');
+          message = 'Sorry, You failed.';
           break;
         case Verdict.PAUSE:
-          message.push('Game paused,');
-          message.push('Relax.');
+          message = 'Game paused. Relax.';
           break;
         case Verdict.INTRO:
-          message.push('Welcome to the game!');
-          message.push('Press Space to start.');
+          message = 'Welcome to the game! Press Space to start.';
           break;
       }
 
-      drawMessage({x: 400, y: 150}, message, this.ctx);
+      var messageArray = breakTextOnLines(message, MESSAGE_WIDTH - 2 * OFFSET_X, this.ctx);
+      drawMessage({x: 400, y: 150, width: MESSAGE_WIDTH}, messageArray, this.ctx);
 
-      //отрисовка сообщения
-      function drawMessage(basePoint, msg, ctx) {
+      /**
+       * Отрисовка сообщения
+       * @param {Object} info
+       * @param {Array} msg
+       * @param {CanvasRenderingContext2D} ctx
+       */
+      function drawMessage(info, msg, ctx) {
         ctx.save();
 
         ctx.fillStyle = '#FFFFFF';
 
         ctx.beginPath();
-        ctx.moveTo(basePoint.x, basePoint.y);
-        ctx.lineTo(basePoint.x, basePoint.y - 50);
-        ctx.lineTo(basePoint.x + 100, basePoint.y - 100);
-        ctx.lineTo(basePoint.x + 250, basePoint.y - 50);
-        ctx.lineTo(basePoint.x + 200, basePoint.y + 50);
-        ctx.lineTo(basePoint.x, basePoint.y);
+        ctx.moveTo(info.x, info.y);
+        ctx.lineTo(info.x, info.y - 50);
+        ctx.lineTo(info.x + info.width - 50, info.y - 100);
+        ctx.lineTo(info.x + info.width + 100, info.y - 50);
+        ctx.lineTo(info.x + info.width + 50, info.y + 50);
+        ctx.lineTo(info.x, info.y);
         ctx.closePath();
 
         ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
@@ -447,12 +466,50 @@ window.Game = (function() {
         ctx.restore();
 
         ctx.font = '16px PT Mono';
-        var textposY = basePoint.y - 30;
-        var textposX = basePoint.x + 20;
+        var textposY = info.y - OFFSET_Y;
+        var textposX = info.x + OFFSET_X;
         for (var i = 0; i < msg.length; i++) {
           ctx.fillText(msg[i], textposX, textposY);
           textposY += 20;
         }
+      }
+
+      /**
+       * Разбивает текст на строки, которые вписываются в ширину
+       * @param {string} text
+       * @param {number} width
+       * @param {CanvasRenderingContext2D} ctx
+       * @return {Array}
+       */
+      function breakTextOnLines(text, width, ctx) {
+        var arText = text.split(' ');
+        var textLines = [];
+        var textLine = arText.shift();
+
+        arText.forEach(function(word) {
+          if (isPossibleToAddWord(textLine, word) || !textLine.length) {
+            //есть место вместить слово целиком, или ширина меньше слова
+            textLine += ' ' + word;
+          } else {
+            textLines.push(textLine);
+            textLine = word;
+          }
+        });
+        if (textLine.length) {
+          textLines.push(textLine);
+        }
+
+        /**
+         * Проверяет возможность добавить слово в строку, чтобы она не превысила ширину
+         * @param {string} baseText
+         * @param {string} addedText
+         * @return {boolean}
+         */
+        function isPossibleToAddWord(baseText, addedText) {
+          return ctx.measureText(addedText).width < width - ctx.measureText(baseText).width;
+        }
+
+        return textLines;
       }
     },
 
