@@ -399,7 +399,7 @@ window.Game = (function() {
        *@constant
        *@type {number}
        */
-      var MESSAGE_WIDTH = 150;
+      var MESSAGE_WIDTH = 250;
       /**
        *@constant
        *@type {number}
@@ -409,7 +409,7 @@ window.Game = (function() {
        *@constant
        *@type {number}
        */
-      var OFFSET_Y = 40;
+      var FONT_SIZE = 16;
 
       var message;
 
@@ -434,82 +434,101 @@ window.Game = (function() {
           break;
       }
 
-      var messageArray = breakTextOnLines(message, MESSAGE_WIDTH - 2 * OFFSET_X, this.ctx);
-      drawMessage({x: 400, y: 150, width: MESSAGE_WIDTH}, messageArray, this.ctx);
+      drawMessage({x: 380, y: 50, width: MESSAGE_WIDTH}, message, this.ctx);
 
       /**
        * Отрисовка сообщения
        * @param {Object} info
-       * @param {Array} msg
+       * @param {string} msg
        * @param {CanvasRenderingContext2D} ctx
        */
       function drawMessage(info, msg, ctx) {
+        /**
+         *@constant
+         *@type {number}
+         */
+        var OFFSET_Y = 10;
+        /**
+         *@constant
+         *@type {number}
+         */
+        var LINE_SPACING_FACTOR = 1.5;
+        /**
+         *@constant
+         *@type {number}
+         */
+        var SHADOW_OFFSET = 10;
+
+        ctx.font = FONT_SIZE + 'px PT Mono';
+
+        var messageArray = breakTextOnLines(msg, MESSAGE_WIDTH - 2 * OFFSET_X, ctx);
+        var lineSpacing = Math.round(FONT_SIZE * LINE_SPACING_FACTOR);
+        var height = lineSpacing * messageArray.length + 2 * OFFSET_Y;
+
         ctx.save();
 
         ctx.fillStyle = '#FFFFFF';
 
         ctx.beginPath();
         ctx.moveTo(info.x, info.y);
-        ctx.lineTo(info.x, info.y - 50);
-        ctx.lineTo(info.x + info.width - 50, info.y - 100);
-        ctx.lineTo(info.x + info.width + 100, info.y - 50);
-        ctx.lineTo(info.x + info.width + 50, info.y + 50);
+        ctx.lineTo(info.x + info.width - 100, info.y - 50);
+        ctx.lineTo(info.x + info.width + 50, info.y);
+        ctx.lineTo(info.x + info.width, info.y + height + 50);
+        ctx.lineTo(info.x, info.y + height);
         ctx.lineTo(info.x, info.y);
         ctx.closePath();
 
         ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
-        ctx.shadowOffsetX = 10;
-        ctx.shadowOffsetY = 10;
+        ctx.shadowOffsetX = SHADOW_OFFSET;
+        ctx.shadowOffsetY = SHADOW_OFFSET;
 
         ctx.fill();
 
         ctx.restore();
 
-        ctx.font = '16px PT Mono';
-        var textposY = info.y - OFFSET_Y;
+        var textposY = info.y + FONT_SIZE + OFFSET_Y;
         var textposX = info.x + OFFSET_X;
-        for (var i = 0; i < msg.length; i++) {
-          ctx.fillText(msg[i], textposX, textposY);
-          textposY += 20;
-        }
-      }
-
-      /**
-       * Разбивает текст на строки, которые вписываются в ширину
-       * @param {string} text
-       * @param {number} width
-       * @param {CanvasRenderingContext2D} ctx
-       * @return {Array}
-       */
-      function breakTextOnLines(text, width, ctx) {
-        var arText = text.split(' ');
-        var textLines = [];
-        var textLine = arText.shift();
-
-        arText.forEach(function(word) {
-          if (isPossibleToAddWord(textLine, word) || !textLine.length) {
-            //есть место вместить слово целиком, или ширина меньше слова
-            textLine += ' ' + word;
-          } else {
-            textLines.push(textLine);
-            textLine = word;
-          }
-        });
-        if (textLine.length) {
-          textLines.push(textLine);
+        for (var i = 0; i < messageArray.length; i++) {
+          ctx.fillText(messageArray[i], textposX, textposY);
+          textposY += lineSpacing;
         }
 
         /**
-         * Проверяет возможность добавить слово в строку, чтобы она не превысила ширину
-         * @param {string} baseText
-         * @param {string} addedText
-         * @return {boolean}
+         * Разбивает текст на строки, которые вписываются в ширину
+         * @param {string} text
+         * @param {number} width
+         * @return {Array}
          */
-        function isPossibleToAddWord(baseText, addedText) {
-          return ctx.measureText(addedText).width < width - ctx.measureText(baseText).width;
-        }
+        function breakTextOnLines(text, width) {
+          var arText = text.split(' ');
+          var textLines = [];
+          var textLine = arText.shift();
 
-        return textLines;
+          arText.forEach(function(word) {
+            if (isPossibleToAddWord(textLine, word) || !textLine.length) {
+              //есть место вместить слово целиком, или ширина меньше слова
+              textLine += ' ' + word;
+            } else {
+              textLines.push(textLine);
+              textLine = word;
+            }
+          });
+          if (textLine.length) {
+            textLines.push(textLine);
+          }
+
+          /**
+           * Проверяет возможность добавить слово в строку, чтобы она не превысила ширину
+           * @param {string} baseText
+           * @param {string} addedText
+           * @return {boolean}
+           */
+          function isPossibleToAddWord(baseText, addedText) {
+            return ctx.measureText(addedText).width < width - ctx.measureText(baseText).width;
+          }
+
+          return textLines;
+        }
       }
     },
 
