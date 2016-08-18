@@ -1,17 +1,18 @@
 'use strict';
 
 var __jsonpCallback;
-var reviews;
-var addres = 'http://localhost:1506/api/reviews?callback=__jsonpCallback';
-jsonpCall(addres, function(data) {
-  reviews = data;
-});
 
-function jsonpCall(requestAdress, handlerFunc) {
-  __jsonpCallback = function(data) {
-    handlerFunc(data);
-  }
+window.jsonpCall = function(requestAdress, handlerFunc) {
+  __jsonpCallback = handlerFunc;
 
-  var scriptElement = document.createElement("script");
+  var scriptElement = document.createElement('script');
   scriptElement.src = requestAdress;
-}
+};
+
+(function() {
+  var reviews;
+  var addres = 'http://localhost:1506/api/reviews?callback=__jsonpCallback';
+  window.jsonpCall(addres, function(data) {
+    reviews = data;
+  });
+});
