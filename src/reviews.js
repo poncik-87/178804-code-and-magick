@@ -15,12 +15,12 @@ window.jsonpCall = function(requestAdress, handlerFunc) {
 
 (function() {
   var reviews;
-  var addres = 'http://localhost:1506/api/reviews?callback=';
-  var handler = function(data) {
-    reviews = data;
-  };
+  var address = 'http://localhost:1506/api/reviews?callback=';
 
-  window.jsonpCall(addres, handler);
+  window.jsonpCall(address, function(data) {
+    reviews = data;
+    console.log(reviews);
+  });
 })();
 
 
