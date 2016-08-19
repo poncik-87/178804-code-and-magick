@@ -19,6 +19,11 @@ window.jsonpCall = function(requestAdress, handlerFunc) {
    *@type {number}
    */
   var IMAGE_SIZE = 124;
+  /**
+   *@constant
+   *@type {number}
+   */
+  var RATING_STAR_SIZE = 40;
 
   var reviews;
   var address = 'http://localhost:1506/api/reviews?callback=';
@@ -57,6 +62,7 @@ window.jsonpCall = function(requestAdress, handlerFunc) {
 
     author.title = review.author.name;
     text.innerHTML = review.description;
+    rating.style.width = RATING_STAR_SIZE * review.rating + 'px';
 
     var authorImage = new Image();
 
@@ -72,8 +78,6 @@ window.jsonpCall = function(requestAdress, handlerFunc) {
     authorImage.src = review.author.picture;
 
     reviewListElement.appendChild(reviewElement);
-
-    rating.style.width *= review.rating;
 
     return reviewElement;
   }
