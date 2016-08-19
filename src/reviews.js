@@ -39,10 +39,9 @@ window.jsonpCall = function(requestAdress, handlerFunc) {
 
     reviews = data;
     reviews.forEach(function(review) {
-      createDOMForReview(review);
+      createReviewElement(review);
     });
 
-    reviewsFilter.classList.remove('invisible');
     reviewsFilter.classList.remove('invisible');
   });
 
@@ -50,7 +49,7 @@ window.jsonpCall = function(requestAdress, handlerFunc) {
    *Создает разметку для отзыва по template элементу разметки
    * @param {Object} review
    */
-  function createDOMForReview(review) {
+  function createReviewElement(review) {
     var reviewElement = elementToClone.cloneNode(true);
     var author = reviewElement.querySelector('.review-author');
     var rating = reviewElement.querySelector('.review-rating');
@@ -58,7 +57,6 @@ window.jsonpCall = function(requestAdress, handlerFunc) {
 
     author.title = review.author.name;
     text.innerHTML = review.description;
-    rating.style.width *= review.rating;
 
     var authorImage = new Image();
 
@@ -74,5 +72,9 @@ window.jsonpCall = function(requestAdress, handlerFunc) {
     authorImage.src = review.author.picture;
 
     reviewListElement.appendChild(reviewElement);
+
+    rating.style.width *= review.rating;
+
+    return reviewElement;
   }
 })();
