@@ -1,9 +1,7 @@
 'use strict';
 
-var __jsonpCallback;
-
 window.jsonpCall = function(requestAdress, handlerFunc) {
-  __jsonpCallback = handlerFunc;
+  window.__jsonpCallback = handlerFunc;
 
   var scriptElement = document.createElement('script');
   scriptElement.src = requestAdress;
@@ -12,7 +10,12 @@ window.jsonpCall = function(requestAdress, handlerFunc) {
 (function() {
   var reviews;
   var addres = 'http://localhost:1506/api/reviews?callback=__jsonpCallback';
-  window.jsonpCall(addres, function(data) {
+  var handler = function(data) {
     reviews = data;
-  });
-});
+    console.log(reviews);
+  };
+
+  window.jsonpCall(addres, handler);
+})();
+
+
