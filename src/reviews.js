@@ -38,6 +38,8 @@ window.jsonpCall = function(requestAdress, handlerFunc) {
     elementToClone = reviewTemplateElement.querySelector('.review');
   }
 
+  reviewsFilterElement.classList.add('invisible');
+
   window.jsonpCall(address, createReviewElementList);
 
   /**
@@ -45,8 +47,6 @@ window.jsonpCall = function(requestAdress, handlerFunc) {
    * @param {Object} data
    */
   function createReviewElementList(data) {
-    reviewsFilterElement.classList.add('invisible');
-
     reviews = data;
     reviews.forEach(function(review) {
       reviewListElement.appendChild(createReviewElement(review));
@@ -58,6 +58,7 @@ window.jsonpCall = function(requestAdress, handlerFunc) {
   /**
    *Создает отображение для отзыва
    * @param {Object} review
+   * @return {HTMLElement}
    */
   function createReviewElement(review) {
     var reviewElement = elementToClone.cloneNode(true);
