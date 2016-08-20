@@ -27,57 +27,60 @@ window.jsonpCall = function(requestAdress, handlerFunc) {
 
   var reviews;
   var address = 'http://localhost:1506/api/reviews?callback=';
-  var templateElement = document.querySelector('#review-template');
+  var reviewTemplateElement = document.querySelector('#review-template');
   var elementToClone;
   var reviewListElement = document.querySelector('.reviews-list');
+  var reviewsFilterElement = document.querySelector('.reviews-filter');
 
-  window.jsonpCall(address, function(data) {
-    var reviewsFilter = document.querySelector('.reviews-filter');
+  if ('content' in reviewTemplateElement) {
+    elementToClone = reviewTemplateElement.content.querySelector('.review');
+  } else {
+    elementToClone = reviewTemplateElement.querySelector('.review');
+  }
 
-    if ('content' in templateElement) {
-      elementToClone = templateElement.content.querySelector('.review');
-    } else {
-      elementToClone = templateElement.querySelector('.review');
-    }
+  window.jsonpCall(address, createReviewElementList);
 
-    reviewsFilter.classList.add('invisible');
+  /**
+   *Отображает все отзывы
+   * @param {Object} data
+   */
+  function createReviewElementList(data) {
+    reviewsFilterElement.classList.add('invisible');
 
     reviews = data;
     reviews.forEach(function(review) {
-      createReviewElement(review);
+      reviewListElement.appendChild(createReviewElement(review));
     });
 
-    reviewsFilter.classList.remove('invisible');
-  });
+    reviewsFilterElement.classList.remove('invisible');
+  }
 
   /**
-   *Создает разметку для отзыва по template элементу разметки
+   *Создает отображение для отзыва
    * @param {Object} review
    */
   function createReviewElement(review) {
     var reviewElement = elementToClone.cloneNode(true);
-    var author = reviewElement.querySelector('.review-author');
-    var rating = reviewElement.querySelector('.review-rating');
-    var text = reviewElement.querySelector('.review-text');
+    var authorElement = reviewElement.querySelector('.review-author');
+    var ratingElement = reviewElement.querySelector('.review-rating');
+    var textElement = reviewElement.querySelector('.review-text');
 
-    author.title = review.author.name;
-    text.innerHTML = review.description;
-    rating.style.width = RATING_STAR_SIZE * review.rating + 'px';
+    authorElement.title = review.author.name;
+    textElement.innerHTML = review.description;
+    ratingElement.style.width = RATING_STAR_SIZE * review.rating + 'px';
 
     var authorImage = new Image();
 
     authorImage.onload = function(evt) {
-      author.src = evt.target.src;
-      author.width = IMAGE_SIZE;
-      author.height = IMAGE_SIZE;
+      authorElement.src = evt.target.src;
+      authorElement.width = IMAGE_SIZE;
+      authorElement.height = IMAGE_SIZE;
     };
     authorImage.onerror = function() {
       reviewElement.classList.add('review-load-failure');
     };
 
     authorImage.src = review.author.picture;
-
-    reviewListElement.appendChild(reviewElement);
 
     return reviewElement;
   }
