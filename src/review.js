@@ -52,6 +52,6 @@ define(function() {
     return reviewElement;
   }
 
-  return createReviewElement;
+  return {createReviewElement: createReviewElement};
 });
 

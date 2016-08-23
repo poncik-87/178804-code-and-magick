@@ -1,6 +1,6 @@
 'use strict';
 
-define(['./load', './review'], function(load, createReviewElement) {
+define(['./load', './review'], function(load, review) {
   /**
    *@constant
    *@type {string}
@@ -12,15 +12,15 @@ define(['./load', './review'], function(load, createReviewElement) {
 
   reviewsFilterElement.classList.add('invisible');
 
-  load(REVIEWS_URL, createReviewElementList);
+  load.load(REVIEWS_URL, createReviewElementList);
 
   /**
    *Отображает все отзывы
    * @param {Object} data
    */
   function createReviewElementList(reviews) {
-    reviews.forEach(function(review) {
-      reviewListElement.appendChild(createReviewElement(review));
+    reviews.forEach(function(reviewItem) {
+      reviewListElement.appendChild(review.createReviewElement(reviewItem));
     });
 
     reviewsFilterElement.classList.remove('invisible');

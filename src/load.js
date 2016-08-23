@@ -15,5 +15,5 @@ define(function() {
     document.body.appendChild(scriptElement);
   }
 
-  return load;
+  return {load: load};
 });
