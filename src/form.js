@@ -1,8 +1,6 @@
 'use strict';
 
-define(function() {
-  var browserCookies = require('browser-cookies');
-
+define(['browser-cookies'], function(browserCookies) {
   /**
    *@constant
    *@type {string}
