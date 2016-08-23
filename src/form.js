@@ -1,6 +1,6 @@
 'use strict';
 
-window.form = (function() {
+define(function() {
   var browserCookies = require('browser-cookies');
 
   /**
@@ -159,4 +159,4 @@ window.form = (function() {
   }
 
   return form;
-})();
+});
