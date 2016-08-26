@@ -2,13 +2,15 @@
 
 define(function() {
   /**
+   * @class
+   * @classdesc Виджет галереи скриншотов
    * @param {Array} pictures
    */
   function Gallery(pictures) {
     if (Array.isArray(pictures)) {
       this.pictures = pictures;
     } else {
-      this.pictures = pictures;
+      this.pictures = [];
     }
 
     this.activePicture = 0;
@@ -53,8 +55,8 @@ define(function() {
     this.overlayGalleryElement.classList.add('invisible');
 
     this.overlayGalleryCloseElement.onclick = null;
-    this.overlayGalleryControlLeftElement = null;
-    this.overlayGalleryControlRightElement = null;
+    this.overlayGalleryControlLeftElement.onclick = null;
+    this.overlayGalleryControlRightElement.onclick = null;
   };
 
   /**

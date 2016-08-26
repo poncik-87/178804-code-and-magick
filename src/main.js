@@ -28,14 +28,15 @@ define(['./form', './game', './gallery', './reviews'], function(form, Game, Gall
 
   for(i = 0; i < photogalleryImageElements.length; i++) {
     pictures.push(photogalleryImageElements[i].src);
+      photogalleryImageElements[i].setAttribute('data-idx', i.toString());
   }
 
   var gallery = new Gallery(pictures);
 
   for(i = 0; i < photogalleryImageElements.length; i++) {
-    //TODO: нужно передавать правильный индекс
     photogalleryImageElements[i].onclick = function(evt) {
-      gallery.show(photogalleryImageElements.indexOf(evt.target));
+      var index = Number(evt.target.getAttribute('data-idx'));
+      gallery.show(index);
     };
   }
 });
