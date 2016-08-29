@@ -1,23 +1,70 @@
 'use strict';
 
-define(['./form', './game', './reviews'], function(form, Game) {
-  var game = new Game(document.querySelector('.demo'));
-  game.initializeLevelAndStart();
-  game.setGameStatus(Game.Verdict.INTRO);
+define(['./form', './game', './gallery', './reviews'], function(form, Game, Gallery) {
 
-  var formOpenButton = document.querySelector('.reviews-controls-new');
+  var game = initGame();
+  initForm();
+  initGallery();
 
-  /** @param {MouseEvent} evt */
-  formOpenButton.onclick = function(evt) {
-    evt.preventDefault();
+  /**
+   * инициализация модуля game
+   * @return {Game}
+   */
+  function initGame() {
+    var newGame = new Game(document.querySelector('.demo'));
+    newGame.initializeLevelAndStart();
+    newGame.setGameStatus(Game.Verdict.INTRO);
 
-    form.open(function() {
-      game.setGameStatus(Game.Verdict.PAUSE);
-      game.setDeactivated(true);
-    });
-  };
+    return newGame;
+  }
 
-  form.onClose = function() {
-    game.setDeactivated(false);
-  };
+  /**
+   * инициализация модуля form
+   */
+  function initForm() {
+    var formOpenButton = document.querySelector('.reviews-controls-new');
+
+    /** @param {MouseEvent} evt */
+    formOpenButton.onclick = function(evt) {
+      evt.preventDefault();
+
+      form.open(function() {
+        game.setGameStatus(Game.Verdict.PAUSE);
+        game.setDeactivated(true);
+      });
+    };
+
+    form.onClose = function() {
+      game.setDeactivated(false);
+    };
+  }
+
+  /**
+   * инициализация модуля gallery
+   */
+  function initGallery() {
+    var pictures = [];
+    var photogalleryElement = document.querySelector('.photogallery');
+    var photogalleryImageElements = photogalleryElement.querySelectorAll('.photogallery-image img');
+    var i;
+
+    for(i = 0; i < photogalleryImageElements.length; i++) {
+      pictures.push(photogalleryImageElements[i].src);
+      photogalleryImageElements[i].setAttribute('data-idx', i.toString());
+    }
+
+    var gallery = new Gallery(pictures);
+
+    for(i = 0; i < photogalleryImageElements.length; i++) {
+      photogalleryImageElements[i].onclick = showImageInGallery;
+    }
+
+    /**
+     * Показывает виджет галереи для DOM элемента, который вызвал функцию в качестве колбэка
+     */
+    function showImageInGallery() {
+      var index = Number(this.getAttribute('data-idx'));
+      gallery.show(index);
+    }
+  }
 });
