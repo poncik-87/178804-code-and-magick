@@ -106,7 +106,7 @@ define(function() {
     } else {
       this.ControlRightElement.classList.remove('invisible');
     }
-  }
+  };
 
   return Gallery;
 });
