@@ -1,6 +1,6 @@
 'use strict';
 
-define(['./load', './review'], function(load, review) {
+define(['./load', './review'], function(load, Review) {
   /**
    *@constant
    *@type {string}
@@ -20,7 +20,8 @@ define(['./load', './review'], function(load, review) {
    */
   function createReviewElementList(reviews) {
     reviews.forEach(function(reviewItem) {
-      reviewListElement.appendChild(review.createReviewElement(reviewItem));
+      var review = new Review(reviewItem);
+      reviewListElement.appendChild(review.element);
     });
 
     reviewsFilterElement.classList.remove('invisible');

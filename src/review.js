@@ -22,19 +22,46 @@ define(function() {
   }
 
   /**
+   * @class
+   * @classdesc Виджет отзыва
+   * @param {Object} data
+   */
+  function Review(data) {
+    this.data = data;
+    this.element = this._createReviewElement();
+
+    this._reviewQuizAnswers = this.element.querySelectorAll('.review-quiz-answer');
+
+    var i;
+    for(i = 0; i < this._reviewQuizAnswers.length; i++) {
+      this._reviewQuizAnswers[i].onclick = quizAnswerhandler.bind(this);
+    }
+
+    /**
+     * @param {MouseEvent} evt
+     */
+    function quizAnswerhandler(evt) {
+      for(i = 0; i < this._reviewQuizAnswers.length; i++) {
+        this._reviewQuizAnswers[i].classList.remove('review-quiz-answer-active');
+      }
+
+      evt.target.classList.add('review-quiz-answer-active');
+    }
+  }
+
+  /**
    *Создает отображение для отзыва
-   * @param {Object} review
    * @return {HTMLElement}
    */
-  function createReviewElement(review) {
+  Review.prototype._createReviewElement = function() {
     var reviewElement = elementToClone.cloneNode(true);
     var authorElement = reviewElement.querySelector('.review-author');
     var ratingElement = reviewElement.querySelector('.review-rating');
     var textElement = reviewElement.querySelector('.review-text');
 
-    authorElement.title = review.author.name;
-    textElement.innerHTML = review.description;
-    ratingElement.style.width = RATING_STAR_SIZE * review.rating + 'px';
+    authorElement.title = this.data.author.name;
+    textElement.innerHTML = this.data.description;
+    ratingElement.style.width = RATING_STAR_SIZE * this.data.rating + 'px';
 
     var authorImage = new Image();
 
@@ -47,11 +74,20 @@ define(function() {
       reviewElement.classList.add('review-load-failure');
     };
 
-    authorImage.src = review.author.picture;
+    authorImage.src = this.data.author.picture;
 
     return reviewElement;
-  }
+  };
 
-  return {createReviewElement: createReviewElement};
+  /**
+   *Очистка данных виджета
+   */
+  Review.prototype.remove = function() {
+    for(var i = 0; i < this._reviewQuizAnswers.length; i++) {
+      this._reviewQuizAnswers[i].onclick = null;
+    }
+  };
+
+  return Review;
 });
 
