@@ -2,6 +2,12 @@
 
 define(function() {
   /**
+   *@constant
+   *@type {string}
+   */
+  var INVISIBLE = 'invisible';
+
+  /**
    * @class
    * @classdesc Виджет галереи скриншотов
    * @param {Array} pictures
@@ -14,13 +20,13 @@ define(function() {
     }
 
     this.activePicture = 0;
-    this.Element = document.querySelector('.overlay-gallery');
-    this.ControlLeftElement = document.querySelector('.overlay-gallery-control-left');
-    this.ControlRightElement = document.querySelector('.overlay-gallery-control-right');
+    this.element = document.querySelector('.overlay-gallery');
+    this.controlLeftElement = document.querySelector('.overlay-gallery-control-left');
+    this.controlRightElement = document.querySelector('.overlay-gallery-control-right');
     this.previewNumberCurrentElement = document.querySelector('.preview-number-current');
     this.previewNumberTotalElement = document.querySelector('.preview-number-total');
-    this.CloseElement = document.querySelector('.overlay-gallery-close');
-    this.PreviewElement = document.querySelector('.overlay-gallery-preview');
+    this.closeElement = document.querySelector('.overlay-gallery-close');
+    this.previewElement = document.querySelector('.overlay-gallery-preview');
 
     this.previewNumberTotalElement.innerHTML = this.pictures.length;
   }
@@ -30,11 +36,11 @@ define(function() {
    * @param {number} index
    */
   Gallery.prototype.show = function(index) {
-    this.Element.classList.remove('invisible');
+    this.element.classList.remove(INVISIBLE);
 
-    this.CloseElement.onclick = this.hide.bind(this);
+    this.closeElement.onclick = this.hide.bind(this);
 
-    this.ControlLeftElement.onclick = (function() {
+    this.controlLeftElement.onclick = (function() {
       if(this.activePicture > 0) {
         this.setActivePicture(this.activePicture - 1);
       }
@@ -42,7 +48,7 @@ define(function() {
       this._setControlsVisible();
     }).bind(this);
 
-    this.ControlRightElement.onclick = (function() {
+    this.controlRightElement.onclick = (function() {
       if(this.activePicture < this.pictures.length - 1) {
         this.setActivePicture(this.activePicture + 1);
       }
@@ -58,11 +64,11 @@ define(function() {
    * Скрывает виджет
    */
   Gallery.prototype.hide = function() {
-    this.Element.classList.add('invisible');
+    this.element.classList.add(INVISIBLE);
 
-    this.CloseElement.onclick = null;
-    this.ControlLeftElement.onclick = null;
-    this.ControlRightElement.onclick = null;
+    this.closeElement.onclick = null;
+    this.controlLeftElement.onclick = null;
+    this.controlRightElement.onclick = null;
   };
 
   /**
@@ -78,14 +84,14 @@ define(function() {
 
     var currentPicture = this.pictures[index];
 
-    var prevImage = this.PreviewElement.querySelector('img');
+    var prevImage = this.previewElement.querySelector('img');
     if(prevImage) {
-      this.PreviewElement.removeChild(prevImage);
+      this.previewElement.removeChild(prevImage);
     }
 
     var image = new Image();
     image.onload = (function(evt) {
-      this.PreviewElement.appendChild(evt.target);
+      this.previewElement.appendChild(evt.target);
     }).bind(this);
     image.src = currentPicture;
 
@@ -97,14 +103,14 @@ define(function() {
    */
   Gallery.prototype._setControlsVisible = function() {
     if(this.activePicture === 0) {
-      this.ControlLeftElement.classList.add('invisible');
+      this.controlLeftElement.classList.add(INVISIBLE);
     } else {
-      this.ControlLeftElement.classList.remove('invisible');
+      this.controlLeftElement.classList.remove(INVISIBLE);
     }
     if(this.activePicture === this.pictures.length - 1) {
-      this.ControlRightElement.classList.add('invisible');
+      this.controlRightElement.classList.add(INVISIBLE);
     } else {
-      this.ControlRightElement.classList.remove('invisible');
+      this.controlRightElement.classList.remove(INVISIBLE);
     }
   };
 
