@@ -34,9 +34,14 @@ define(['./form', './game', './gallery', './reviews'], function(form, Game, Gall
   var gallery = new Gallery(pictures);
 
   for(i = 0; i < photogalleryImageElements.length; i++) {
-    photogalleryImageElements[i].onclick = function(evt) {
-      var index = Number(evt.target.getAttribute('data-idx'));
-      gallery.show(index);
-    };
+    photogalleryImageElements[i].onclick = showImageInGallery;
+  }
+
+  /**
+   * Показывает виджет галереи для DOM элемента, который вызвал функцию в качестве колбэка
+   */
+  function showImageInGallery() {
+    var index = Number(this.getAttribute('data-idx'));
+    gallery.show(index);
   }
 });
