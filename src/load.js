@@ -2,17 +2,33 @@
 
 define(function() {
   /**
-   *загружает данные с помощью jsonp
+   *загружает данные с помощью xhr
    * @param {string} requestUrl
+   * @param {Object} parameters
    * @param {function} callback
    */
-  function load(requestUrl, callback) {
-    window.__jsonpCallback = callback;
+  function load(requestUrl, parameters, callback, onEmptyData) {
+    var from = parameters.from || 0;
+    var to = parameters.to || Infinity;
+    var filter = parameters.filter || 'reviews-all';
+    requestUrl += '?from=' + from + '&to=' + to + '&filter=' + filter;
 
-    var scriptElement = document.createElement('script');
-    requestUrl += '__jsonpCallback';
-    scriptElement.src = requestUrl;
-    document.body.appendChild(scriptElement);
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', requestUrl);
+
+    xhr.onload = function() {
+      var data = JSON.parse(this.responseText);
+      if(data.length) {
+        callback(data);
+      } else {
+        onEmptyData();
+      }
+    };
+    xhr.onerror = function() {
+      console.log('Error: review data is not loaded.');
+    };
+
+    xhr.send();
   }
 
   return {load: load};

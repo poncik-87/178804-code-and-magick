@@ -5,14 +5,34 @@ define(['./load', './review'], function(load, Review) {
    *@constant
    *@type {string}
    */
-  var REVIEWS_URL = 'http://localhost:1506/api/reviews?callback=';
+  var REVIEWS_URL = '/api/reviews';
 
-  var reviewListElement = document.querySelector('.reviews-list');
-  var reviewsFilterElement = document.querySelector('.reviews-filter');
+  /**
+   *@constant
+   *@type {number}
+   */
+  var PAGE_SIZE = 3;
 
-  reviewsFilterElement.classList.add('invisible');
+  var element = document.querySelector('.reviews-list');
+  var filterElement = document.querySelector('.reviews-filter');
+  var controlMoreElement = document.querySelector('.reviews-controls-more');
 
-  load.load(REVIEWS_URL, createReviewElementList);
+  var currentPage = 0;
+  var currentFilter;
+
+  controlMoreElement.classList.remove('invisible');
+  loadNextPage();
+
+  controlMoreElement.addEventListener('click', loadNextPage);
+
+  filterElement.addEventListener('change', function(evt) {
+    if(evt.target.type === 'radio') {
+      element.innerHTML = '';
+      currentFilter = evt.target.id;
+      currentPage = 0;
+      loadNextPage();
+    }
+  }, true);
 
   /**
    *Отображает все отзывы
@@ -21,9 +41,33 @@ define(['./load', './review'], function(load, Review) {
   function createReviewElementList(reviews) {
     reviews.forEach(function(reviewItem) {
       var review = new Review(reviewItem);
-      reviewListElement.appendChild(review.element);
+      element.appendChild(review.element);
     });
 
-    reviewsFilterElement.classList.remove('invisible');
+    filterElement.classList.remove('invisible');
+  }
+
+  /**
+   *Скрывает кнопку подгрузки отзывов
+   */
+  function hideControlMore() {
+    controlMoreElement.classList.add('invisible');
+  }
+
+  /**
+   *Загрузка следующей страницы отзывов
+   */
+  function loadNextPage() {
+    var params = {
+      from: currentPage * PAGE_SIZE,
+      to: currentPage * PAGE_SIZE + PAGE_SIZE,
+      filter: currentFilter
+    };
+
+    filterElement.classList.add('invisible');
+
+    load.load(REVIEWS_URL, params, createReviewElementList, hideControlMore);
+
+    currentPage++;
   }
 });
