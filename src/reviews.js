@@ -44,7 +44,7 @@ define(['./load', './review'], function(load, Review) {
       element.appendChild(review.element);
     });
 
-    filterElement.classList.remove('invisible');
+    disableFilterElement(false);
   }
 
   /**
@@ -64,10 +64,20 @@ define(['./load', './review'], function(load, Review) {
       filter: currentFilter
     };
 
-    filterElement.classList.add('invisible');
+    disableFilterElement(true);
 
     load.load(REVIEWS_URL, params, createReviewElementList, hideControlMore);
 
     currentPage++;
+  }
+
+  /**
+   *Назначает контролам фильтра активность
+   * @param {bool} enabled
+   */
+  function disableFilterElement(disabled) {
+    for(var i = 0; i < filterElement.elements.length; i++) {
+      filterElement.elements[i].disabled = disabled;
+    }
   }
 });
