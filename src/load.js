@@ -7,7 +7,7 @@ define(function() {
    * @param {Object} parameters
    * @param {function} callback
    */
-  function load(requestUrl, parameters, callback, onEmptyData) {
+  function load(requestUrl, parameters, callback) {
     var from = parameters.from || 0;
     var to = parameters.to || Infinity;
     var filter = parameters.filter || 'reviews-all';
@@ -15,20 +15,31 @@ define(function() {
 
     var xhr = new XMLHttpRequest();
     xhr.open('GET', requestUrl);
+    xhr.timeout = 2000;
 
     xhr.onload = function() {
-      var data = JSON.parse(this.responseText);
-      if(data.length) {
-        callback(data);
+      if (this.status === 200) {
+        callback(JSON.parse(this.responseText));
       } else {
-        onEmptyData();
+        handleError(this.statusText);
       }
     };
     xhr.onerror = function() {
-      console.log('Error: review data is not loaded.');
+      handleError(this.statusText);
+    };
+    xhr.ontimeout = function() {
+      handleError('Loading data has timed out.');
     };
 
     xhr.send();
+  }
+
+  /**
+   *обработка ошибки загрузки
+   * @param {string} message
+   */
+  function handleError(message) {
+    console.log('Error: ' + message);
   }
 
   return {load: load};

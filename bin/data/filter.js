@@ -1,52 +1,63 @@
 'use strict';
 
 module.exports = function(list, filterID) {
+  /**
+   * Вариант фильтра
+   * @enum {string}
+   */
+  var Filter = {
+    REVIEWS_ALL: 'reviews-all',
+    REVIEWS_RECENT: 'reviews-recent',
+    REVIEWS_GOOD: 'reviews-good',
+    REVIEWS_BAD: 'reviews-bad',
+    REVIEWS_POPILAR: 'reviews-popular'
+  };
+
   var filteredList;
 
   switch(filterID) {
-    case 'reviews-all' :
-      return list;
-    case 'reviews-recent' :
-      //сортировка по убыванию
-      return list.sort(function(a, b) {
-        var aDate = a.created || 0;
-        var bDate = b.created || 0;
-
-        return bDate - aDate;
+    case Filter.REVIEWS_ALL :
+      filteredList = list;
+      break;
+    case Filter.REVIEWS_RECENT :
+      filteredList = list.sort(function(a, b) {
+        return descendingSortNumbers(a.created, b.created);
       });
-    case 'reviews-good' :
-      filteredList = list.filter(function(item) {
-        return item.rating >= 3;
-      });
-
-      //сортировка по убыванию
-      return filteredList.sort(function(a, b) {
-        var aRating = a.rating || 0;
-        var bRating = b.rating || 0;
-
-        return bRating - aRating;
-      });
-    case 'reviews-bad' :
-      filteredList = list.filter(function(item) {
-        return item.rating < 3;
-      });
-
-      //сортировка по убыванию
-      return filteredList.sort(function(a, b) {
-        var aRating = a.rating || 0;
-        var bRating = b.rating || 0;
-
-        return bRating - aRating;
-      });
-    case 'reviews-popular' :
-      //сортировка по убыванию
-      return list.sort(function(a, b) {
-        var aUsefulness = a.review_usefulness || 0;
-        var bUsefulness = b.review_usefulness || 0;
-
-        return bUsefulness - aUsefulness;
+      break;
+    case Filter.REVIEWS_GOOD :
+      filteredList = list.filter(
+        function(item) {
+          return item.rating >= 3;
+        }).sort(
+        function(a, b) {
+          return descendingSortNumbers(a.rating, b.rating);
+        });
+      break;
+    case Filter.REVIEWS_BAD :
+      filteredList = list.filter(
+        function(item) {
+          return item.rating < 3;
+        }).sort(
+        function(a, b) {
+          return descendingSortNumbers(a.rating, b.rating);
+        });
+      break;
+    case Filter.REVIEWS_POPILAR :
+      filteredList = list.sort(function(a, b) {
+        return descendingSortNumbers(a.review_usefulness, b.review_usefulness);
       });
   }
 
-  return list;
+  /**
+   * @param {number} a
+   * @param {number} b
+   */
+  function descendingSortNumbers(a, b) {
+    a = a || 0;
+    b = b || 0;
+
+    return b - a;
+  }
+
+  return filteredList;
 };
