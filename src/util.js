@@ -7,8 +7,6 @@ define(function() {
   */
   var ELEMENT_INDENT = 100;
 
-  var throttleBlock = false;
-
   var ret = {
     /**
     * @param {HTMLElement} element
@@ -19,15 +17,29 @@ define(function() {
       return elementPosition.bottom + ELEMENT_INDENT > 0 && elementPosition.top - ELEMENT_INDENT < window.innerHeight;
     },
 
-    throttle: function(callback, delay, context) {
-      if(!throttleBlock) {
-        callback.call(context);
+    /**
+    * @param {function} handler
+    * @param {number} delay
+    * @return {function}
+    */
+    throttle: function(handler, delay) {
+      var throttleBlock = false;
 
-        throttleBlock = true;
-        setTimeout(function() {
-          throttleBlock = false;
-        }, delay);
+      /**
+       * Сбрасывает флаг по таймауту
+       */
+      function onTimeout() {
+        throttleBlock = false;
       }
+
+      return function() {
+        if(!throttleBlock) {
+          handler();
+
+          throttleBlock = true;
+          setTimeout(onTimeout, delay);
+        }
+      };
     }
   };
 

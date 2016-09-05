@@ -264,6 +264,8 @@ define(['./util'], function(util) {
     this.setDeactivated(false);
 
     headerCloudsElement.style.backgroundPositionX = '0';
+    this._scrollHandler = this._scrollHandler.bind(this);
+    this._scrollThrottledHandler = util.throttle(this._scrollHandler, 100);
     this._onScroll = this._onScroll.bind(this);
     window.addEventListener('scroll', this._onScroll);
   };
@@ -824,14 +826,15 @@ define(['./util'], function(util) {
 
     /** @private */
     _onScroll: function() {
-      util.throttle(this._scrollCallback, 100, this);
+      this._scrollThrottledHandler();
 
       if(isCloudElementVisible) {
         headerCloudsElement.style.backgroundPositionX = window.pageYOffset / 10 + '%';
       }
     },
 
-    _scrollCallback: function() {
+    /** @private */
+    _scrollHandler: function() {
       isCloudElementVisible = util.isElementVisible(headerCloudsElement);
 
       if(!util.isElementVisible(gameElement)) {
