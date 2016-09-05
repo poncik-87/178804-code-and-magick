@@ -14,6 +14,12 @@ define(function() {
   var WIDTH = 700;
 
   /**
+   *@constant
+   *@type {number}
+   */
+  var ELEMENT_INDENT = 100;
+
+  /**
    * ID уровней.
    * @enum {number}
    */
@@ -238,6 +244,10 @@ define(function() {
     return state;
   };
 
+  var headerCloudsElement = document.querySelector('.header-clouds');
+  var gameElement = document.querySelector('.demo');
+  var isCloudElementVisible = true;
+
   /**
    * Конструктор объекта Game. Создает canvas, добавляет обработчики событий
    * и показывает приветственный экран.
@@ -258,6 +268,9 @@ define(function() {
     this._pauseListener = this._pauseListener.bind(this);
 
     this.setDeactivated(false);
+
+    this._onScroll = this._onScroll.bind(this);
+    window.addEventListener('scroll', this._onScroll);
   };
 
   Game.prototype = {
@@ -812,6 +825,32 @@ define(function() {
     _removeGameListeners: function() {
       window.removeEventListener('keydown', this._onKeyDown);
       window.removeEventListener('keyup', this._onKeyUp);
+    },
+
+    /** @private */
+    _onScroll: function() {
+      if(isCloudElementVisible) {
+        headerCloudsElement.style.backgroundPositionX = window.pageYOffset / 10 + '%';
+      }
+
+      clearTimeout(this._scrollTimeout);
+      this._scrollTimeout = setTimeout((function() {
+        isCloudElementVisible = this._isElementVisible(headerCloudsElement);
+
+        if(!this._isElementVisible(gameElement)) {
+          this.setGameStatus(Game.Verdict.PAUSE);
+        }
+      }).bind(this), 100);
+    },
+
+    /**
+    * @private
+    * @param {} element
+    * @return {bool}
+    */
+    _isElementVisible: function(element) {
+      var elementPosition = element.getBoundingClientRect();
+      return elementPosition.bottom + ELEMENT_INDENT > 0 && elementPosition.top - ELEMENT_INDENT < window.innerHeight;
     }
   };
 
