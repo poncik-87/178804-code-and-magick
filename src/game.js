@@ -1,6 +1,6 @@
 'use strict';
 
-define(function() {
+define(['./util'], function(util) {
   /**
    * @const
    * @type {number}
@@ -238,6 +238,10 @@ define(function() {
     return state;
   };
 
+  var headerCloudsElement = document.querySelector('.header-clouds');
+  var gameElement = document.querySelector('.demo');
+  var isCloudElementVisible = true;
+
   /**
    * Конструктор объекта Game. Создает canvas, добавляет обработчики событий
    * и показывает приветственный экран.
@@ -258,6 +262,12 @@ define(function() {
     this._pauseListener = this._pauseListener.bind(this);
 
     this.setDeactivated(false);
+
+    headerCloudsElement.style.backgroundPositionX = '0';
+    this._scrollHandler = this._scrollHandler.bind(this);
+    this._scrollThrottledHandler = util.throttle(this._scrollHandler, 100);
+    this._onScroll = this._onScroll.bind(this);
+    window.addEventListener('scroll', this._onScroll);
   };
 
   Game.prototype = {
@@ -812,6 +822,24 @@ define(function() {
     _removeGameListeners: function() {
       window.removeEventListener('keydown', this._onKeyDown);
       window.removeEventListener('keyup', this._onKeyUp);
+    },
+
+    /** @private */
+    _onScroll: function() {
+      this._scrollThrottledHandler();
+
+      if(isCloudElementVisible) {
+        headerCloudsElement.style.backgroundPositionX = window.pageYOffset / 10 + '%';
+      }
+    },
+
+    /** @private */
+    _scrollHandler: function() {
+      isCloudElementVisible = util.isElementVisible(headerCloudsElement);
+
+      if(!util.isElementVisible(gameElement)) {
+        this.setGameStatus(Game.Verdict.PAUSE);
+      }
     }
   };
 
