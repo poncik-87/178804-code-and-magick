@@ -1,6 +1,6 @@
 'use strict';
 
-define(function() {
+define(['./util'], function(util) {
   /**
    * @const
    * @type {number}
@@ -12,12 +12,6 @@ define(function() {
    * @type {number}
    */
   var WIDTH = 700;
-
-  /**
-   *@constant
-   *@type {number}
-   */
-  var ELEMENT_INDENT = 100;
 
   /**
    * ID уровней.
@@ -269,6 +263,7 @@ define(function() {
 
     this.setDeactivated(false);
 
+    headerCloudsElement.style.backgroundPositionX = '0';
     this._onScroll = this._onScroll.bind(this);
     window.addEventListener('scroll', this._onScroll);
   };
@@ -829,28 +824,19 @@ define(function() {
 
     /** @private */
     _onScroll: function() {
+      util.throttle(this._scrollCallback, 100, this);
+
       if(isCloudElementVisible) {
         headerCloudsElement.style.backgroundPositionX = window.pageYOffset / 10 + '%';
       }
-
-      clearTimeout(this._scrollTimeout);
-      this._scrollTimeout = setTimeout((function() {
-        isCloudElementVisible = this._isElementVisible(headerCloudsElement);
-
-        if(!this._isElementVisible(gameElement)) {
-          this.setGameStatus(Game.Verdict.PAUSE);
-        }
-      }).bind(this), 100);
     },
 
-    /**
-    * @private
-    * @param {} element
-    * @return {bool}
-    */
-    _isElementVisible: function(element) {
-      var elementPosition = element.getBoundingClientRect();
-      return elementPosition.bottom + ELEMENT_INDENT > 0 && elementPosition.top - ELEMENT_INDENT < window.innerHeight;
+    _scrollCallback: function() {
+      isCloudElementVisible = util.isElementVisible(headerCloudsElement);
+
+      if(!util.isElementVisible(gameElement)) {
+        this.setGameStatus(Game.Verdict.PAUSE);
+      }
     }
   };
 
