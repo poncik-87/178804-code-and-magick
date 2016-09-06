@@ -73,7 +73,7 @@ define(['./load', './review'], function(load, Review) {
       currentPage = 0;
       hideControlMore(false);
 
-      if(currentFilter.length) {
+      if(currentFilter !== null) {
         var currentFilterElement = document.getElementById(currentFilter);
         if(currentFilterElement) {
           currentFilterElement.checked = true;
