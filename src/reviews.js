@@ -9,6 +9,12 @@ define(['./load', './review'], function(load, Review) {
 
   /**
    *@constant
+   *@type {string}
+   */
+  var REVIEWS_CURRENT_FILTER = 'reviewsCurrentFilter';
+
+  /**
+   *@constant
    *@type {number}
    */
   var PAGE_SIZE = 3;
@@ -18,7 +24,6 @@ define(['./load', './review'], function(load, Review) {
   var controlMoreElement = document.querySelector('.reviews-controls-more');
 
   var currentPage;
-  var currentFilter;
 
   loadNextPage(true);
 
@@ -28,7 +33,7 @@ define(['./load', './review'], function(load, Review) {
 
   filterElement.addEventListener('change', function(evt) {
     if(evt.target.type === 'radio') {
-      currentFilter = evt.target.id;
+      localStorage.setItem(REVIEWS_CURRENT_FILTER, evt.target.id);
       loadNextPage(true);
     }
   }, true);
@@ -61,10 +66,19 @@ define(['./load', './review'], function(load, Review) {
    * @param {bool} reset
    */
   function loadNextPage(reset) {
+    var currentFilter = localStorage.getItem(REVIEWS_CURRENT_FILTER);
+
     if(reset) {
       element.innerHTML = '';
       currentPage = 0;
       hideControlMore(false);
+
+      if(currentFilter !== null) {
+        var currentFilterElement = document.getElementById(currentFilter);
+        if(currentFilterElement !== null) {
+          currentFilterElement.checked = true;
+        }
+      }
     }
 
     var params = {
