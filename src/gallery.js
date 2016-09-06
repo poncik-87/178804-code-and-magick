@@ -29,6 +29,10 @@ define(function() {
     this.previewElement = document.querySelector('.overlay-gallery-preview');
 
     this.previewNumberTotalElement.innerHTML = this.pictures.length;
+
+    this.hide = this.hide.bind(this);
+    this._onControlLeftClicked = this._onControlLeftClicked.bind(this);
+    this._onControlRightClicked = this._onControlRightClicked.bind(this);
   }
 
   /**
@@ -38,23 +42,9 @@ define(function() {
   Gallery.prototype.show = function(index) {
     this.element.classList.remove(INVISIBLE);
 
-    this.closeElement.onclick = this.hide.bind(this);
-
-    this.controlLeftElement.onclick = (function() {
-      if(this.activePicture > 0) {
-        this.setActivePicture(this.activePicture - 1);
-      }
-
-      this._setControlsVisible();
-    }).bind(this);
-
-    this.controlRightElement.onclick = (function() {
-      if(this.activePicture < this.pictures.length - 1) {
-        this.setActivePicture(this.activePicture + 1);
-      }
-
-      this._setControlsVisible();
-    }).bind(this);
+    this.closeElement.onclick = this.hide;
+    this.controlLeftElement.onclick = this._onControlLeftClicked;
+    this.controlRightElement.onclick = this._onControlRightClicked;
 
     this.setActivePicture(index);
     this._setControlsVisible();
@@ -112,6 +102,28 @@ define(function() {
     } else {
       this.controlRightElement.classList.remove(INVISIBLE);
     }
+  };
+
+  /**
+   * Листает картинку влево
+   */
+  Gallery.prototype._onControlLeftClicked = function() {
+    if(this.activePicture > 0) {
+      this.setActivePicture(this.activePicture - 1);
+    }
+
+    this._setControlsVisible();
+  };
+
+  /**
+   * Листает картинку вправо
+   */
+  Gallery.prototype._onControlRightClicked = function() {
+    if(this.activePicture < this.pictures.length - 1) {
+      this.setActivePicture(this.activePicture + 1);
+    }
+
+    this._setControlsVisible();
   };
 
   return Gallery;
