@@ -46,6 +46,8 @@ module.exports = function(list, filterID) {
       filteredList = list.sort(function(a, b) {
         return descendingSortNumbers(a.review_usefulness, b.review_usefulness);
       });
+    default:
+      filteredList = list;
   }
 
   /**
