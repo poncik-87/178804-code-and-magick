@@ -75,7 +75,7 @@ define(['./load', './review'], function(load, Review) {
 
       if(currentFilter !== null) {
         var currentFilterElement = document.getElementById(currentFilter);
-        if(currentFilterElement) {
+        if(currentFilterElement !== null) {
           currentFilterElement.checked = true;
         }
       }
