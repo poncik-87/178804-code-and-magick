@@ -33,9 +33,7 @@ define(function() {
     this._reviewQuizAnswers = this.element.querySelectorAll('.review-quiz-answer');
 
     this._quizAnswerhandler = this._quizAnswerhandler.bind(this);
-    for(var i = 0; i < this._reviewQuizAnswers.length; i++) {
-      this._reviewQuizAnswers[i].onclick = this._quizAnswerhandler;
-    }
+    this.element.addEventListener('click', this._quizAnswerhandler);
   }
 
   /**
