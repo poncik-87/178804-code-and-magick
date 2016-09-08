@@ -35,6 +35,10 @@ define(function() {
     this._onControlRightClicked = this._onControlRightClicked.bind(this);
   }
 
+  Gallery.prototype.create = function() {
+
+  };
+
   /**
    * Показывает виджет
    * @param {number} index

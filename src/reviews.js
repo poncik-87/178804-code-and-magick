@@ -45,7 +45,7 @@ define(['./load', './review'], function(load, Review) {
   function createReviewElementList(reviews) {
     reviews.forEach(function(reviewItem) {
       var review = new Review(reviewItem);
-      element.appendChild(review.element);
+      review.create(element);
     });
   }
 

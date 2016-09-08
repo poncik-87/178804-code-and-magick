@@ -40,6 +40,12 @@ define(function() {
           setTimeout(onTimeout, delay);
         }
       };
+    },
+
+    inherit: function(child, parent) {
+      var EmptyConstructor = function() {};
+      EmptyConstructor.prototype = parent.prototype;
+      child.prototype = new EmptyConstructor();
     }
   };
 
