@@ -49,9 +49,11 @@ define(['./util', './domComponent'], function(util, DOMComponent) {
    *Очистка данных виджета
    */
   Review.prototype.remove = function() {
+    this.data = null;
+    this._reviewQuizAnswers = null;
     this.element.parentNode.removeChild(this.element);
 
-    this.element.removeEventListener(this._quizAnswerhandler);
+    this.element.removeEventListener('click', this._quizAnswerhandler);
   };
 
   /**
