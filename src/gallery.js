@@ -1,6 +1,6 @@
 'use strict';
 
-define(function() {
+define(['./util', './domComponent'], function(util, DOMComponent) {
   /**
    *@constant
    *@type {string}
@@ -30,21 +30,23 @@ define(function() {
 
     this.previewNumberTotalElement.innerHTML = this.pictures.length;
 
-    this.hide = this.hide.bind(this);
+    this.remove = this.remove.bind(this);
     this._onControlLeftClicked = this._onControlLeftClicked.bind(this);
     this._onControlRightClicked = this._onControlRightClicked.bind(this);
   }
+
+  util.inherit(Gallery, DOMComponent);
 
   /**
    * Показывает виджет
    * @param {number} index
    */
-  Gallery.prototype.show = function(index) {
+  Gallery.prototype.create = function(index) {
     this.element.classList.remove(INVISIBLE);
 
-    this.closeElement.onclick = this.hide;
-    this.controlLeftElement.onclick = this._onControlLeftClicked;
-    this.controlRightElement.onclick = this._onControlRightClicked;
+    this.closeElement.addEventListener('click', this.remove);
+    this.controlLeftElement.addEventListener('click', this._onControlLeftClicked);
+    this.controlRightElement.addEventListener('click', this._onControlRightClicked);
 
     this.setActivePicture(index);
     this._setControlsVisible();
@@ -53,12 +55,12 @@ define(function() {
   /**
    * Скрывает виджет
    */
-  Gallery.prototype.hide = function() {
+  Gallery.prototype.remove = function() {
     this.element.classList.add(INVISIBLE);
 
-    this.closeElement.onclick = null;
-    this.controlLeftElement.onclick = null;
-    this.controlRightElement.onclick = null;
+    this.closeElement.removeEventListener('click', this.remove);
+    this.controlLeftElement.removeEventListener('click', this._onControlLeftClicked);
+    this.controlRightElement.removeEventListener('click', this._onControlRightClicked);
   };
 
   /**

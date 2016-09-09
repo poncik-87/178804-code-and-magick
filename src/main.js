@@ -64,7 +64,7 @@ define(['./form', './game', './gallery', './reviews'], function(form, Game, Gall
      */
     function showImageInGallery() {
       var index = Number(this.getAttribute('data-idx'));
-      gallery.show(index);
+      gallery.create(index);
     }
   }
 });

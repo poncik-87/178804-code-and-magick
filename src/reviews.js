@@ -24,6 +24,7 @@ define(['./load', './review'], function(load, Review) {
   var controlMoreElement = document.querySelector('.reviews-controls-more');
 
   var currentPage;
+  var reviewList = [];
 
   loadNextPage(true);
 
@@ -40,13 +41,26 @@ define(['./load', './review'], function(load, Review) {
 
   /**
    *Отображает все отзывы
-   * @param {Object} data
+   * @param {Array <Object>} data
    */
   function createReviewElementList(reviews) {
     reviews.forEach(function(reviewItem) {
       var review = new Review(reviewItem);
-      element.appendChild(review.element);
+      review.create(element);
+
+      reviewList.push(review);
     });
+  }
+
+  /**
+   *Удаляет все отзывы
+   */
+  function removeReviewElementList() {
+    reviewList.forEach(function(review) {
+      review.remove();
+    });
+
+    reviewList.splice(0, reviewList.length);
   }
 
   /**
@@ -69,7 +83,7 @@ define(['./load', './review'], function(load, Review) {
     var currentFilter = localStorage.getItem(REVIEWS_CURRENT_FILTER);
 
     if(reset) {
-      element.innerHTML = '';
+      removeReviewElementList();
       currentPage = 0;
       hideControlMore(false);
 
@@ -104,7 +118,7 @@ define(['./load', './review'], function(load, Review) {
 
   /**
    *Обработка загруженных данных
-   * @param {Object} data
+   * @param {Array <Object>} data
    */
   function onLoad(data) {
     if(data.length) {

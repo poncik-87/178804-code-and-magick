@@ -1,6 +1,6 @@
 'use strict';
 
-define(function() {
+define(['./util', './domComponent'], function(util, DOMComponent) {
   /**
    *@constant
    *@type {number}
@@ -28,13 +28,33 @@ define(function() {
    */
   function Review(data) {
     this.data = data;
-    this.element = this._createReviewElement();
-
-    this._reviewQuizAnswers = this.element.querySelectorAll('.review-quiz-answer');
 
     this._quizAnswerhandler = this._quizAnswerhandler.bind(this);
-    this.element.addEventListener('click', this._quizAnswerhandler);
   }
+
+  util.inherit(Review, DOMComponent);
+
+  /**
+   *Создание разметки и добавление обработчиков
+   */
+  Review.prototype.create = function(parentNode) {
+    this.element = this._createReviewElement();
+    parentNode.appendChild(this.element);
+
+    this._reviewQuizAnswers = this.element.querySelectorAll('.review-quiz-answer');
+    this.element.addEventListener('click', this._quizAnswerhandler);
+  };
+
+  /**
+   *Очистка данных виджета
+   */
+  Review.prototype.remove = function() {
+    this.data = null;
+    this._reviewQuizAnswers = null;
+    this.element.parentNode.removeChild(this.element);
+
+    this.element.removeEventListener('click', this._quizAnswerhandler);
+  };
 
   /**
    *Создает отображение для отзыва
@@ -75,15 +95,6 @@ define(function() {
     }
 
     evt.target.classList.add('review-quiz-answer-active');
-  };
-
-  /**
-   *Очистка данных виджета
-   */
-  Review.prototype.remove = function() {
-    for(var i = 0; i < this._reviewQuizAnswers.length; i++) {
-      this._reviewQuizAnswers[i].onclick = null;
-    }
   };
 
   return Review;
