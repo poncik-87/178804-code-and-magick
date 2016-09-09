@@ -1,6 +1,6 @@
 'use strict';
 
-define(function() {
+define(['./util', './domComponent'], function(util, DOMComponent) {
   /**
    *@constant
    *@type {string}
@@ -30,23 +30,21 @@ define(function() {
 
     this.previewNumberTotalElement.innerHTML = this.pictures.length;
 
-    this.hide = this.hide.bind(this);
+    this.remove = this.remove.bind(this);
     this._onControlLeftClicked = this._onControlLeftClicked.bind(this);
     this._onControlRightClicked = this._onControlRightClicked.bind(this);
   }
 
-  Gallery.prototype.create = function() {
-
-  };
+  util.inherit(Gallery, DOMComponent);
 
   /**
    * Показывает виджет
    * @param {number} index
    */
-  Gallery.prototype.show = function(index) {
+  Gallery.prototype.create = function(index) {
     this.element.classList.remove(INVISIBLE);
 
-    this.closeElement.onclick = this.hide;
+    this.closeElement.onclick = this.remove;
     this.controlLeftElement.onclick = this._onControlLeftClicked;
     this.controlRightElement.onclick = this._onControlRightClicked;
 
@@ -57,7 +55,7 @@ define(function() {
   /**
    * Скрывает виджет
    */
-  Gallery.prototype.hide = function() {
+  Gallery.prototype.remove = function() {
     this.element.classList.add(INVISIBLE);
 
     this.closeElement.onclick = null;

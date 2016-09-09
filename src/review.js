@@ -28,6 +28,8 @@ define(['./util', './domComponent'], function(util, DOMComponent) {
    */
   function Review(data) {
     this.data = data;
+
+    this._quizAnswerhandler = this._quizAnswerhandler.bind(this);
   }
 
   util.inherit(Review, DOMComponent);
@@ -85,13 +87,13 @@ define(['./util', './domComponent'], function(util, DOMComponent) {
   /**
   * @param {MouseEvent} evt
   */
-  Review.prototype._quizAnswerhandler = (function(evt) {
+  Review.prototype._quizAnswerhandler = function(evt) {
     for(var i = 0; i < this._reviewQuizAnswers.length; i++) {
       this._reviewQuizAnswers[i].classList.remove('review-quiz-answer-active');
     }
 
     evt.target.classList.add('review-quiz-answer-active');
-  }).bind(Review.prototype);
+  };
 
   return Review;
 });
