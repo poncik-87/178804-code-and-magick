@@ -26,7 +26,7 @@ define(function() {
 
   /**
    * Добавление подписчика
-   * @param { {param: callback} } subscriber
+   * @param { {param: callback[,param2: callback2 ...]} } subscriber
    */
   ReviewData.prototype.addSubscriber = function(subscriber) {
     this._subscribers.push(subscriber);

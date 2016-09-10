@@ -103,6 +103,9 @@ define(['./util', './domComponent'], function(util, DOMComponent) {
     this.reviewData.setQuizAnswer(evt.target.getAttribute('quiz-answer'));
   };
 
+  /**
+  * колбэк изменения данных отзыва
+  */
   Review.prototype.onSetQuizAnswer = function() {
     var i;
     for(i = 0; i < this._reviewQuizAnswers.length; i++) {
