@@ -13,6 +13,7 @@ define(function() {
     this._description = data.description;
     this._rating = data.rating;
     this._usefulness = data.review_usefulness;
+    this._quizAnswer = '';
   }
 
   /**
@@ -58,6 +59,13 @@ define(function() {
   };
 
   /**
+   * Получение данных об оценке отзыва пользователем
+   */
+  ReviewDataItem.prototype.getQuizAnswer = function() {
+    return this._quizAnswer;
+  };
+
+  /**
    * @param {string} authorName
    */
   ReviewDataItem.prototype.setAuthorName = function(authorName) {
@@ -97,6 +105,13 @@ define(function() {
    */
   ReviewDataItem.prototype.setUsefulness = function(usefulness) {
     this._usefulness = usefulness;
+  };
+
+  /**
+   * @param {string} usefulness
+   */
+  ReviewDataItem.prototype.setQuizAnswer = function(quizAnswer) {
+    this._quizAnswer = quizAnswer;
   };
 
   return ReviewDataItem;

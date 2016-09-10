@@ -65,6 +65,11 @@ define(['./util', './domComponent'], function(util, DOMComponent) {
     var authorElement = reviewElement.querySelector('.review-author');
     var ratingElement = reviewElement.querySelector('.review-rating');
     var textElement = reviewElement.querySelector('.review-text');
+    var quizAnswerYesElement = reviewElement.querySelector('.review-quiz-answer-yes');
+    var quizAnswerNoElement = reviewElement.querySelector('.review-quiz-answer-no');
+
+    quizAnswerYesElement.setAttribute('quiz-answer', 'yes');
+    quizAnswerNoElement.setAttribute('quiz-answer', 'no');
 
     authorElement.title = this.dataItem.getAuthorName();
     textElement.innerHTML = this.dataItem.getDescription();
@@ -95,6 +100,7 @@ define(['./util', './domComponent'], function(util, DOMComponent) {
     }
 
     evt.target.classList.add('review-quiz-answer-active');
+    this.dataItem.setQuizAnswer(evt.target.getAttribute('quiz-answer'));
   };
 
   return Review;
