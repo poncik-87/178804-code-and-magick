@@ -24,10 +24,10 @@ define(['./util', './domComponent'], function(util, DOMComponent) {
   /**
    * @class
    * @classdesc Виджет отзыва
-   * @param {Object} data
+   * @param {DataItem} dataItem
    */
-  function Review(data) {
-    this.data = data;
+  function Review(dataItem) {
+    this.dataItem = dataItem;
 
     this._quizAnswerhandler = this._quizAnswerhandler.bind(this);
   }
@@ -49,7 +49,7 @@ define(['./util', './domComponent'], function(util, DOMComponent) {
    *Очистка данных виджета
    */
   Review.prototype.remove = function() {
-    this.data = null;
+    this.dataItem = null;
     this._reviewQuizAnswers = null;
     this.element.parentNode.removeChild(this.element);
 
@@ -65,10 +65,15 @@ define(['./util', './domComponent'], function(util, DOMComponent) {
     var authorElement = reviewElement.querySelector('.review-author');
     var ratingElement = reviewElement.querySelector('.review-rating');
     var textElement = reviewElement.querySelector('.review-text');
+    var quizAnswerYesElement = reviewElement.querySelector('.review-quiz-answer-yes');
+    var quizAnswerNoElement = reviewElement.querySelector('.review-quiz-answer-no');
 
-    authorElement.title = this.data.author.name;
-    textElement.innerHTML = this.data.description;
-    ratingElement.style.width = RATING_STAR_SIZE * this.data.rating + 'px';
+    quizAnswerYesElement.setAttribute('quiz-answer', 'yes');
+    quizAnswerNoElement.setAttribute('quiz-answer', 'no');
+
+    authorElement.title = this.dataItem.getAuthorName();
+    textElement.innerHTML = this.dataItem.getDescription();
+    ratingElement.style.width = RATING_STAR_SIZE * this.dataItem.getRating() + 'px';
 
     var authorImage = new Image();
 
@@ -81,7 +86,7 @@ define(['./util', './domComponent'], function(util, DOMComponent) {
       reviewElement.classList.add('review-load-failure');
     };
 
-    authorImage.src = this.data.author.picture;
+    authorImage.src = this.dataItem.getAuthorPicture();
 
     return reviewElement;
   };
@@ -95,6 +100,7 @@ define(['./util', './domComponent'], function(util, DOMComponent) {
     }
 
     evt.target.classList.add('review-quiz-answer-active');
+    this.dataItem.setQuizAnswer(evt.target.getAttribute('quiz-answer'));
   };
 
   return Review;
