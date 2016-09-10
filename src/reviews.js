@@ -1,6 +1,6 @@
 'use strict';
 
-define(['./load', './review', './reviewDataItem'], function(load, Review, ReviewDataItem) {
+define(['./load', './review', './ReviewData'], function(load, Review, ReviewData) {
   /**
    *@constant
    *@type {string}
@@ -43,9 +43,9 @@ define(['./load', './review', './reviewDataItem'], function(load, Review, Review
    *Отображает все отзывы
    * @param {Array <Object>} data
    */
-  function createReviewElementList(reviewsData) {
-    reviewsData.forEach(function(reviewData) {
-      var review = new Review(new ReviewDataItem(reviewData));
+  function createReviewElementList(data) {
+    data.forEach(function(dataItem) {
+      var review = new Review(new ReviewData(dataItem));
       review.create(element);
 
       reviewList.push(review);

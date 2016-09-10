@@ -6,7 +6,7 @@ define(function() {
    * @classdesc Обертка данных отзыва
    * @param {Object} data
    */
-  function ReviewDataItem(data) {
+  function ReviewData(data) {
     this._authorName = data.author.name;
     this._authorPicture = data.author.picture;
     this._created = data.created;
@@ -19,100 +19,102 @@ define(function() {
   /**
    * Получение данных об авторе
    */
-  ReviewDataItem.prototype.getAuthorName = function() {
+  ReviewData.prototype.getAuthorName = function() {
     return this._authorName;
   };
 
   /**
    * Получение картинки автора
    */
-  ReviewDataItem.prototype.getAuthorPicture = function() {
+  ReviewData.prototype.getAuthorPicture = function() {
     return this._authorPicture;
   };
 
   /**
    * Получение данных о дате создания
    */
-  ReviewDataItem.prototype.getCreated = function() {
+  ReviewData.prototype.getCreated = function() {
     return this._created;
   };
 
   /**
    * Получение данных об описании
    */
-  ReviewDataItem.prototype.getDescription = function() {
+  ReviewData.prototype.getDescription = function() {
     return this._description;
   };
 
   /**
    * Получение данных о рейтинге
    */
-  ReviewDataItem.prototype.getRating = function() {
+  ReviewData.prototype.getRating = function() {
     return this._rating;
   };
 
   /**
    * Получение данных о полезности отзыва
    */
-  ReviewDataItem.prototype.getUsefulness = function() {
+  ReviewData.prototype.getUsefulness = function() {
     return this._usefulness;
   };
 
   /**
    * Получение данных об оценке отзыва пользователем
    */
-  ReviewDataItem.prototype.getQuizAnswer = function() {
+  ReviewData.prototype.getQuizAnswer = function() {
     return this._quizAnswer;
   };
 
   /**
    * @param {string} authorName
    */
-  ReviewDataItem.prototype.setAuthorName = function(authorName) {
+  ReviewData.prototype.setAuthorName = function(authorName) {
     this._authorName = authorName;
   };
 
   /**
    * @param {string} authorPicture
    */
-  ReviewDataItem.prototype.setAuthor = function(authorPicture) {
+  ReviewData.prototype.setAuthor = function(authorPicture) {
     this._authorPicture = authorPicture;
   };
 
   /**
    * @param {string} created
    */
-  ReviewDataItem.prototype.setCreated = function(created) {
+  ReviewData.prototype.setCreated = function(created) {
     this._author = created;
   };
 
   /**
    * @param {string} description
    */
-  ReviewDataItem.prototype.setDescription = function(description) {
+  ReviewData.prototype.setDescription = function(description) {
     this._description = description;
   };
 
   /**
    * @param {string} rating
    */
-  ReviewDataItem.prototype.setRating = function(rating) {
+  ReviewData.prototype.setRating = function(rating) {
     this._rating = rating;
   };
 
   /**
    * @param {string} usefulness
    */
-  ReviewDataItem.prototype.setUsefulness = function(usefulness) {
+  ReviewData.prototype.setUsefulness = function(usefulness) {
     this._usefulness = usefulness;
   };
 
   /**
    * @param {string} usefulness
    */
-  ReviewDataItem.prototype.setQuizAnswer = function(quizAnswer) {
+  ReviewData.prototype.setQuizAnswer = function(quizAnswer) {
     this._quizAnswer = quizAnswer;
   };
 
-  return ReviewDataItem;
+  return ReviewData;
 });
+
+//TODO: сделать массив объектов подписчиков на события. объекты будут вида {название переменной: функция колбека}; сделать функцию, которая добавляет подписчика (объект с набором колбэков) и функцию которая удаляет подписчика. в сеттерах нужно будет проходить по массиву и если есть колбэк с ключом - название переменной, то вызывать его
