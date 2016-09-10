@@ -14,7 +14,46 @@ define(function() {
     this._rating = data.rating;
     this._usefulness = data.review_usefulness;
     this._quizAnswer = '';
+    this._subscribers = [];
   }
+
+  /**
+   * Очистка объекта
+   */
+  ReviewData.prototype.remove = function() {
+    this._subscribers.splice(0, this._subscribers.length);
+  };
+
+  /**
+   * Добавление подписчика
+   * @param { {param: callback} } subscriber
+   */
+  ReviewData.prototype.addSubscriber = function(subscriber) {
+    this._subscribers.push(subscriber);
+  };
+
+  /**
+   * Удаление подписчика
+   * @param { Object } subscriber
+   */
+  ReviewData.prototype.removeSubscriber = function(subscriber) {
+    var idx = this._subscribers.indexOf(subscriber);
+    if(idx >= 0) {
+      this._subscribers.splice(idx, 1);
+    }
+  };
+
+  /**
+   * Вызов колбека подписчиков
+   * @param { string } param
+   */
+  ReviewData.prototype._subscribersCall = function(param) {
+    this._subscribers.forEach(function(subscriber) {
+      if(subscriber[param]) {
+        subscriber[param]();
+      }
+    });
+  };
 
   /**
    * Получение данных об авторе
@@ -70,13 +109,17 @@ define(function() {
    */
   ReviewData.prototype.setAuthorName = function(authorName) {
     this._authorName = authorName;
+
+    this._subscribersCall('authorName');
   };
 
   /**
    * @param {string} authorPicture
    */
-  ReviewData.prototype.setAuthor = function(authorPicture) {
+  ReviewData.prototype.setAuthorPicture = function(authorPicture) {
     this._authorPicture = authorPicture;
+
+    this._subscribersCall('authorPicture');
   };
 
   /**
@@ -84,6 +127,8 @@ define(function() {
    */
   ReviewData.prototype.setCreated = function(created) {
     this._author = created;
+
+    this._subscribersCall('created');
   };
 
   /**
@@ -91,6 +136,8 @@ define(function() {
    */
   ReviewData.prototype.setDescription = function(description) {
     this._description = description;
+
+    this._subscribersCall('description');
   };
 
   /**
@@ -98,6 +145,8 @@ define(function() {
    */
   ReviewData.prototype.setRating = function(rating) {
     this._rating = rating;
+
+    this._subscribersCall('rating');
   };
 
   /**
@@ -105,6 +154,8 @@ define(function() {
    */
   ReviewData.prototype.setUsefulness = function(usefulness) {
     this._usefulness = usefulness;
+
+    this._subscribersCall('usefulness');
   };
 
   /**
@@ -112,9 +163,9 @@ define(function() {
    */
   ReviewData.prototype.setQuizAnswer = function(quizAnswer) {
     this._quizAnswer = quizAnswer;
+
+    this._subscribersCall('quizAnswer');
   };
 
   return ReviewData;
 });
-
-//TODO: сделать массив объектов подписчиков на события. объекты будут вида {название переменной: функция колбека}; сделать функцию, которая добавляет подписчика (объект с набором колбэков) и функцию которая удаляет подписчика. в сеттерах нужно будет проходить по массиву и если есть колбэк с ключом - название переменной, то вызывать его
