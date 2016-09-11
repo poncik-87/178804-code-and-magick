@@ -46,6 +46,16 @@ define(function() {
       var EmptyConstructor = function() {};
       EmptyConstructor.prototype = parent.prototype;
       child.prototype = new EmptyConstructor();
+    },
+
+    mixin: function(toObjectProto, fromObjectProto, exceptions) {
+      var isExceptionsExists = Array.isArray(exceptions) && exceptions.length;
+
+      for(var key in fromObjectProto) {
+        if(!isExceptionsExists || exceptions.indexOf(key) < 0) {
+          toObjectProto[key] = fromObjectProto[key];
+        }
+      }
     }
   };
 

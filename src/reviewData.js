@@ -1,6 +1,6 @@
 'use strict';
 
-define(function() {
+define(['./util', './publisher'], function(util, Publisher) {
   /**
    * @class
    * @classdesc Обертка данных отзыва
@@ -14,46 +14,13 @@ define(function() {
     this._rating = data.rating;
     this._usefulness = data.review_usefulness;
     this._quizAnswer = '';
-    this._subscribers = [];
+
+    //подмешиваем функционал pub/sub
+    Publisher.call(this);
   }
 
-  /**
-   * Очистка объекта
-   */
-  ReviewData.prototype.remove = function() {
-    this._subscribers.splice(0, this._subscribers.length);
-  };
-
-  /**
-   * Добавление подписчика
-   * @param { {param: callback[,param2: callback2 ...]} } subscriber
-   */
-  ReviewData.prototype.addSubscriber = function(subscriber) {
-    this._subscribers.push(subscriber);
-  };
-
-  /**
-   * Удаление подписчика
-   * @param { Object } subscriber
-   */
-  ReviewData.prototype.removeSubscriber = function(subscriber) {
-    var idx = this._subscribers.indexOf(subscriber);
-    if(idx >= 0) {
-      this._subscribers.splice(idx, 1);
-    }
-  };
-
-  /**
-   * Вызов колбека подписчиков
-   * @param { string } param
-   */
-  ReviewData.prototype._subscribersCall = function(param) {
-    this._subscribers.forEach(function(subscriber) {
-      if(subscriber[param]) {
-        subscriber[param]();
-      }
-    });
-  };
+  //подмешиваем функционал pub/sub
+  util.mixin(ReviewData.prototype, Publisher.prototype);
 
   /**
    * Получение данных об авторе
