@@ -24,12 +24,16 @@ define(['./util', './domComponent'], function(util, DOMComponent) {
   /**
    * @class
    * @classdesc Виджет отзыва
-   * @param {DataItem} dataItem
+   * @param {reviewData} reviewData
    */
-  function Review(dataItem) {
-    this.dataItem = dataItem;
+  function Review(reviewData) {
+    this.reviewData = reviewData;
 
     this._quizAnswerhandler = this._quizAnswerhandler.bind(this);
+
+    this.onSetQuizAnswer = this.onSetQuizAnswer.bind(this);
+    //этот вызов обязательно после бинда
+    this.reviewData.addSubscriber({quizAnswer: this.onSetQuizAnswer});
   }
 
   util.inherit(Review, DOMComponent);
@@ -49,7 +53,8 @@ define(['./util', './domComponent'], function(util, DOMComponent) {
    *Очистка данных виджета
    */
   Review.prototype.remove = function() {
-    this.dataItem = null;
+    this.reviewData.remove();
+    this.reviewData = null;
     this._reviewQuizAnswers = null;
     this.element.parentNode.removeChild(this.element);
 
@@ -71,9 +76,9 @@ define(['./util', './domComponent'], function(util, DOMComponent) {
     quizAnswerYesElement.setAttribute('quiz-answer', 'yes');
     quizAnswerNoElement.setAttribute('quiz-answer', 'no');
 
-    authorElement.title = this.dataItem.getAuthorName();
-    textElement.innerHTML = this.dataItem.getDescription();
-    ratingElement.style.width = RATING_STAR_SIZE * this.dataItem.getRating() + 'px';
+    authorElement.title = this.reviewData.getAuthorName();
+    textElement.innerHTML = this.reviewData.getDescription();
+    ratingElement.style.width = RATING_STAR_SIZE * this.reviewData.getRating() + 'px';
 
     var authorImage = new Image();
 
@@ -86,7 +91,7 @@ define(['./util', './domComponent'], function(util, DOMComponent) {
       reviewElement.classList.add('review-load-failure');
     };
 
-    authorImage.src = this.dataItem.getAuthorPicture();
+    authorImage.src = this.reviewData.getAuthorPicture();
 
     return reviewElement;
   };
@@ -95,12 +100,23 @@ define(['./util', './domComponent'], function(util, DOMComponent) {
   * @param {MouseEvent} evt
   */
   Review.prototype._quizAnswerhandler = function(evt) {
-    for(var i = 0; i < this._reviewQuizAnswers.length; i++) {
+    this.reviewData.setQuizAnswer(evt.target.getAttribute('quiz-answer'));
+  };
+
+  /**
+  * колбэк изменения данных отзыва
+  */
+  Review.prototype.onSetQuizAnswer = function() {
+    var i;
+    for(i = 0; i < this._reviewQuizAnswers.length; i++) {
       this._reviewQuizAnswers[i].classList.remove('review-quiz-answer-active');
     }
 
-    evt.target.classList.add('review-quiz-answer-active');
-    this.dataItem.setQuizAnswer(evt.target.getAttribute('quiz-answer'));
+    for(i = 0; i < this._reviewQuizAnswers.length; i++) {
+      if(this._reviewQuizAnswers[i].getAttribute('quiz-answer') === this.reviewData.getQuizAnswer()) {
+        this._reviewQuizAnswers[i].classList.add('review-quiz-answer-active');
+      }
+    }
   };
 
   return Review;

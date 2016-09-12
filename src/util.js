@@ -42,10 +42,31 @@ define(function() {
       };
     },
 
+    /**
+     * Наследование через пустой конструктор
+     * @param {Object} child
+     * @param {Object} parent
+     */
     inherit: function(child, parent) {
       var EmptyConstructor = function() {};
       EmptyConstructor.prototype = parent.prototype;
       child.prototype = new EmptyConstructor();
+    },
+
+    /**
+     * Подмешивание методов объекта
+     * @param {Object} toObjectProto
+     * @param {Object} fromObjectProto
+     * @param {Array <string>} exceptions
+     */
+    mixin: function(toObjectProto, fromObjectProto, exceptions) {
+      var isExceptionsExist = Array.isArray(exceptions) && exceptions.length;
+
+      for(var key in fromObjectProto) {
+        if(!isExceptionsExist || exceptions.indexOf(key) < 0) {
+          toObjectProto[key] = fromObjectProto[key];
+        }
+      }
     }
   };
 

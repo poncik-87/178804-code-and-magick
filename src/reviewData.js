@@ -1,12 +1,12 @@
 'use strict';
 
-define(function() {
+define(['./util', './publisher'], function(util, Publisher) {
   /**
    * @class
    * @classdesc Обертка данных отзыва
    * @param {Object} data
    */
-  function ReviewDataItem(data) {
+  function ReviewData(data) {
     this._authorName = data.author.name;
     this._authorPicture = data.author.picture;
     this._created = data.created;
@@ -14,105 +14,125 @@ define(function() {
     this._rating = data.rating;
     this._usefulness = data.review_usefulness;
     this._quizAnswer = '';
+
+    //подмешиваем функционал pub/sub
+    Publisher.call(this);
   }
+
+  //подмешиваем функционал pub/sub
+  util.mixin(ReviewData.prototype, Publisher.prototype);
 
   /**
    * Получение данных об авторе
    */
-  ReviewDataItem.prototype.getAuthorName = function() {
+  ReviewData.prototype.getAuthorName = function() {
     return this._authorName;
   };
 
   /**
    * Получение картинки автора
    */
-  ReviewDataItem.prototype.getAuthorPicture = function() {
+  ReviewData.prototype.getAuthorPicture = function() {
     return this._authorPicture;
   };
 
   /**
    * Получение данных о дате создания
    */
-  ReviewDataItem.prototype.getCreated = function() {
+  ReviewData.prototype.getCreated = function() {
     return this._created;
   };
 
   /**
    * Получение данных об описании
    */
-  ReviewDataItem.prototype.getDescription = function() {
+  ReviewData.prototype.getDescription = function() {
     return this._description;
   };
 
   /**
    * Получение данных о рейтинге
    */
-  ReviewDataItem.prototype.getRating = function() {
+  ReviewData.prototype.getRating = function() {
     return this._rating;
   };
 
   /**
    * Получение данных о полезности отзыва
    */
-  ReviewDataItem.prototype.getUsefulness = function() {
+  ReviewData.prototype.getUsefulness = function() {
     return this._usefulness;
   };
 
   /**
    * Получение данных об оценке отзыва пользователем
    */
-  ReviewDataItem.prototype.getQuizAnswer = function() {
+  ReviewData.prototype.getQuizAnswer = function() {
     return this._quizAnswer;
   };
 
   /**
    * @param {string} authorName
    */
-  ReviewDataItem.prototype.setAuthorName = function(authorName) {
+  ReviewData.prototype.setAuthorName = function(authorName) {
     this._authorName = authorName;
+
+    this._subscribersCall('authorName');
   };
 
   /**
    * @param {string} authorPicture
    */
-  ReviewDataItem.prototype.setAuthor = function(authorPicture) {
+  ReviewData.prototype.setAuthorPicture = function(authorPicture) {
     this._authorPicture = authorPicture;
+
+    this._subscribersCall('authorPicture');
   };
 
   /**
    * @param {string} created
    */
-  ReviewDataItem.prototype.setCreated = function(created) {
+  ReviewData.prototype.setCreated = function(created) {
     this._author = created;
+
+    this._subscribersCall('created');
   };
 
   /**
    * @param {string} description
    */
-  ReviewDataItem.prototype.setDescription = function(description) {
+  ReviewData.prototype.setDescription = function(description) {
     this._description = description;
+
+    this._subscribersCall('description');
   };
 
   /**
    * @param {string} rating
    */
-  ReviewDataItem.prototype.setRating = function(rating) {
+  ReviewData.prototype.setRating = function(rating) {
     this._rating = rating;
+
+    this._subscribersCall('rating');
   };
 
   /**
    * @param {string} usefulness
    */
-  ReviewDataItem.prototype.setUsefulness = function(usefulness) {
+  ReviewData.prototype.setUsefulness = function(usefulness) {
     this._usefulness = usefulness;
+
+    this._subscribersCall('usefulness');
   };
 
   /**
    * @param {string} usefulness
    */
-  ReviewDataItem.prototype.setQuizAnswer = function(quizAnswer) {
+  ReviewData.prototype.setQuizAnswer = function(quizAnswer) {
     this._quizAnswer = quizAnswer;
+
+    this._subscribersCall('quizAnswer');
   };
 
-  return ReviewDataItem;
+  return ReviewData;
 });
