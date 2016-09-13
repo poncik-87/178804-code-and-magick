@@ -8,6 +8,12 @@ define(['./util', './domComponent'], function(util, DOMComponent) {
   var INVISIBLE = 'invisible';
 
   /**
+   *@constant
+   *@type {string}
+   */
+  var HASH_PHOTO = '#photo';
+
+  /**
    * @class
    * @classdesc Виджет галереи скриншотов
    * @param {Array} pictures
@@ -18,6 +24,8 @@ define(['./util', './domComponent'], function(util, DOMComponent) {
     } else {
       this.pictures = [];
     }
+
+    this._isShown = false;
 
     this.activePicture = 0;
     this.element = document.querySelector('.overlay-gallery');
@@ -33,23 +41,27 @@ define(['./util', './domComponent'], function(util, DOMComponent) {
     this.remove = this.remove.bind(this);
     this._onControlLeftClicked = this._onControlLeftClicked.bind(this);
     this._onControlRightClicked = this._onControlRightClicked.bind(this);
+
+    window.addEventListener('hashchange', function() {
+      this.checkHash();
+    }.bind(this));
   }
 
   util.inherit(Gallery, DOMComponent);
 
   /**
    * Показывает виджет
-   * @param {number} index
    */
-  Gallery.prototype.create = function(index) {
+  Gallery.prototype.create = function() {
     this.element.classList.remove(INVISIBLE);
 
     this.closeElement.addEventListener('click', this.remove);
     this.controlLeftElement.addEventListener('click', this._onControlLeftClicked);
     this.controlRightElement.addEventListener('click', this._onControlRightClicked);
 
-    this.setActivePicture(index);
-    this._setControlsVisible();
+    this.setActivePicture();
+
+    this._isShown = true;
   };
 
   /**
@@ -58,36 +70,44 @@ define(['./util', './domComponent'], function(util, DOMComponent) {
   Gallery.prototype.remove = function() {
     this.element.classList.add(INVISIBLE);
 
+    location.hash = '';
+
     this.closeElement.removeEventListener('click', this.remove);
     this.controlLeftElement.removeEventListener('click', this._onControlLeftClicked);
     this.controlRightElement.removeEventListener('click', this._onControlRightClicked);
+
+    this._isShown = false;
   };
 
   /**
    * Назначает картинку для отображения
-   * @param {number} index
    */
-  Gallery.prototype.setActivePicture = function(index) {
-    if(index < 0 || index >= this.pictures.length) {
+  Gallery.prototype.setActivePicture = function() {
+    var idx = this._getPictureIndex(location.hash);
+
+    if(idx >= 0 && idx < this.pictures.length) {
+      this.activePicture = idx;
+
+      var currentPicture = this.pictures[idx];
+
+      var prevImage = this.previewElement.querySelector('img');
+      if(prevImage) {
+        this.previewElement.removeChild(prevImage);
+      }
+
+      var image = new Image();
+      image.onload = (function(evt) {
+        this.previewElement.appendChild(evt.target);
+      }).bind(this);
+      image.src = currentPicture;
+
+      this.previewNumberCurrentElement.innerHTML = idx + 1;
+
+      this._setControlsVisible();
+    }else {
+      this.remove();
       return;
     }
-
-    this.activePicture = index;
-
-    var currentPicture = this.pictures[index];
-
-    var prevImage = this.previewElement.querySelector('img');
-    if(prevImage) {
-      this.previewElement.removeChild(prevImage);
-    }
-
-    var image = new Image();
-    image.onload = (function(evt) {
-      this.previewElement.appendChild(evt.target);
-    }).bind(this);
-    image.src = currentPicture;
-
-    this.previewNumberCurrentElement.innerHTML = index + 1;
   };
 
   /**
@@ -111,10 +131,8 @@ define(['./util', './domComponent'], function(util, DOMComponent) {
    */
   Gallery.prototype._onControlLeftClicked = function() {
     if(this.activePicture > 0) {
-      this.setActivePicture(this.activePicture - 1);
+      location.hash = HASH_PHOTO + util.getPathname(this.pictures[this.activePicture - 1]);
     }
-
-    this._setControlsVisible();
   };
 
   /**
@@ -122,10 +140,44 @@ define(['./util', './domComponent'], function(util, DOMComponent) {
    */
   Gallery.prototype._onControlRightClicked = function() {
     if(this.activePicture < this.pictures.length - 1) {
-      this.setActivePicture(this.activePicture + 1);
+      location.hash = HASH_PHOTO + util.getPathname(this.pictures[this.activePicture + 1]);
+    }
+  };
+
+  /**
+   * Обработка значения хэша
+   */
+  Gallery.prototype.checkHash = function() {
+    if(location.hash.match(/#photo\/(\S+)/)) {
+      if (this._isShown) {
+        this.setActivePicture();
+      } else {
+        this.create();
+      }
+    } else {
+      this.remove();
+    }
+  };
+
+  /**
+   * Получить индекс картинки в массиве картинок
+   * @param {number} index
+   */
+  Gallery.prototype._getPictureIndex = function(path) {
+    var idx = -1;
+
+    if (path.indexOf(HASH_PHOTO) === 0) {
+      path = path.substr(HASH_PHOTO.length);
     }
 
-    this._setControlsVisible();
+    for(var i = 0; i < this.pictures.length; i++) {
+      if(util.getPathname(this.pictures[i]) === path) {
+        idx = i;
+        break;
+      }
+    }
+
+    return idx;
   };
 
   return Gallery;
