@@ -72,6 +72,7 @@ define(function() {
     /**
      * Получение относительного пути URL-а
      * @param {string} url
+     * #return {string}
      */
     getPathname: function(url) {
       var tmpA = document.createElement('a');

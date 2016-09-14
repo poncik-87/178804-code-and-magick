@@ -40,6 +40,7 @@ define(['./util', './domComponent'], function(util, DOMComponent) {
 
   /**
    *Создание разметки и добавление обработчиков
+   * @param {HTMLElement} parentNode
    */
   Review.prototype.create = function(parentNode) {
     this.element = this._createReviewElement();

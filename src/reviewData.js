@@ -24,6 +24,7 @@ define(['./util', './publisher'], function(util, Publisher) {
 
   /**
    * Получение данных об авторе
+   * @return {string}
    */
   ReviewData.prototype.getAuthorName = function() {
     return this._authorName;
@@ -31,6 +32,7 @@ define(['./util', './publisher'], function(util, Publisher) {
 
   /**
    * Получение картинки автора
+   * @return {string}
    */
   ReviewData.prototype.getAuthorPicture = function() {
     return this._authorPicture;
@@ -38,6 +40,7 @@ define(['./util', './publisher'], function(util, Publisher) {
 
   /**
    * Получение данных о дате создания
+   * @return {string}
    */
   ReviewData.prototype.getCreated = function() {
     return this._created;
@@ -45,6 +48,7 @@ define(['./util', './publisher'], function(util, Publisher) {
 
   /**
    * Получение данных об описании
+   * @return {string}
    */
   ReviewData.prototype.getDescription = function() {
     return this._description;
@@ -52,6 +56,7 @@ define(['./util', './publisher'], function(util, Publisher) {
 
   /**
    * Получение данных о рейтинге
+   * @return {string}
    */
   ReviewData.prototype.getRating = function() {
     return this._rating;
@@ -59,6 +64,7 @@ define(['./util', './publisher'], function(util, Publisher) {
 
   /**
    * Получение данных о полезности отзыва
+   * @return {string}
    */
   ReviewData.prototype.getUsefulness = function() {
     return this._usefulness;
@@ -66,6 +72,7 @@ define(['./util', './publisher'], function(util, Publisher) {
 
   /**
    * Получение данных об оценке отзыва пользователем
+   * @return {string}
    */
   ReviewData.prototype.getQuizAnswer = function() {
     return this._quizAnswer;
@@ -126,7 +133,7 @@ define(['./util', './publisher'], function(util, Publisher) {
   };
 
   /**
-   * @param {string} usefulness
+   * @param {string} quizAnswer
    */
   ReviewData.prototype.setQuizAnswer = function(quizAnswer) {
     this._quizAnswer = quizAnswer;
