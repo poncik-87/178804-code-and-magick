@@ -54,6 +54,7 @@ define(['./util', './form', './game', './gallery', './reviews'], function(util, 
     }
 
     var gallery = new Gallery(pictures);
+    gallery.create();
 
     for(i = 0; i < photogalleryImageElements.length; i++) {
       photogalleryImageElements[i].onclick = imageElementClicked;

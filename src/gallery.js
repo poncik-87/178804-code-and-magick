@@ -25,9 +25,20 @@ define(['./util', './domComponent'], function(util, DOMComponent) {
       this.pictures = [];
     }
 
-    this._isShown = false;
-
     this.activePicture = 0;
+  }
+
+  util.inherit(Gallery, DOMComponent);
+
+  /**
+   * Обработка создания виджета
+   */
+  Gallery.prototype.create = function() {
+    this.hide = this.hide.bind(this);
+    this._onControlLeftClicked = this._onControlLeftClicked.bind(this);
+    this._onControlRightClicked = this._onControlRightClicked.bind(this);
+    this._onHashChange = this._onHashChange.bind(this);
+
     this.element = document.querySelector('.overlay-gallery');
     this.controlLeftElement = document.querySelector('.overlay-gallery-control-left');
     this.controlRightElement = document.querySelector('.overlay-gallery-control-right');
@@ -38,45 +49,49 @@ define(['./util', './domComponent'], function(util, DOMComponent) {
 
     this.previewNumberTotalElement.innerHTML = this.pictures.length;
 
-    this.remove = this.remove.bind(this);
-    this._onControlLeftClicked = this._onControlLeftClicked.bind(this);
-    this._onControlRightClicked = this._onControlRightClicked.bind(this);
+    this.closeElement.addEventListener('click', this.hide);
+    this.controlLeftElement.addEventListener('click', this._onControlLeftClicked);
+    this.controlRightElement.addEventListener('click', this._onControlRightClicked);
+    window.addEventListener('hashchange', this._onHashChange);
+  };
 
-    window.addEventListener('hashchange', function() {
-      this.checkHash();
-    }.bind(this));
-  }
+  /**
+   * Обработка удаления виджета
+   */
+  Gallery.prototype.remove = function() {
+    this.closeElement.removeEventListener('click', this.hide);
+    this.controlLeftElement.removeEventListener('click', this._onControlLeftClicked);
+    this.controlRightElement.removeEventListener('click', this._onControlRightClicked);
+    window.removeEventListener('hashchange', this._onHashChange);
 
-  util.inherit(Gallery, DOMComponent);
+    this.element = null;
+    this.controlLeftElement = null;
+    this.controlRightElement = null;
+    this.previewNumberCurrentElement = null;
+    this.previewNumberTotalElement = null;
+    this.closeElement = null;
+    this.previewElement = null;
+
+    this.hide = null;
+    this._onControlLeftClicked = null;
+    this._onControlRightClicked = null;
+    this._onHashChange = null;
+  };
 
   /**
    * Показывает виджет
    */
-  Gallery.prototype.create = function() {
+  Gallery.prototype.show = function() {
     this.element.classList.remove(INVISIBLE);
-
-    this.closeElement.addEventListener('click', this.remove);
-    this.controlLeftElement.addEventListener('click', this._onControlLeftClicked);
-    this.controlRightElement.addEventListener('click', this._onControlRightClicked);
-
     this.setActivePicture();
-
-    this._isShown = true;
   };
 
   /**
    * Скрывает виджет
    */
-  Gallery.prototype.remove = function() {
+  Gallery.prototype.hide = function() {
     this.element.classList.add(INVISIBLE);
-
     location.hash = '';
-
-    this.closeElement.removeEventListener('click', this.remove);
-    this.controlLeftElement.removeEventListener('click', this._onControlLeftClicked);
-    this.controlRightElement.removeEventListener('click', this._onControlRightClicked);
-
-    this._isShown = false;
   };
 
   /**
@@ -105,7 +120,7 @@ define(['./util', './domComponent'], function(util, DOMComponent) {
 
       this._setControlsVisible();
     }else {
-      this.remove();
+      this.hide();
       return;
     }
   };
@@ -145,17 +160,20 @@ define(['./util', './domComponent'], function(util, DOMComponent) {
   };
 
   /**
+   * Обработка изменения хэша адресной строки
+   */
+  Gallery.prototype._onHashChange = function() {
+    this.checkHash();
+  };
+
+  /**
    * Обработка значения хэша
    */
   Gallery.prototype.checkHash = function() {
     if(location.hash.match(/#photo\/(\S+)/)) {
-      if (this._isShown) {
-        this.setActivePicture();
-      } else {
-        this.create();
-      }
+      this.show();
     } else {
-      this.remove();
+      this.hide();
     }
   };
 
