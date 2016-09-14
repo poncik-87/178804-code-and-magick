@@ -16,7 +16,7 @@ define(['./util', './domComponent'], function(util, DOMComponent) {
   /**
    * @class
    * @classdesc Виджет галереи скриншотов
-   * @param {Array} pictures
+   * @param {Array <string>} pictures
    */
   function Gallery(pictures) {
     if (Array.isArray(pictures)) {
@@ -121,7 +121,6 @@ define(['./util', './domComponent'], function(util, DOMComponent) {
       this._setControlsVisible();
     }else {
       this.hide();
-      return;
     }
   };
 
@@ -179,7 +178,8 @@ define(['./util', './domComponent'], function(util, DOMComponent) {
 
   /**
    * Получить индекс картинки в массиве картинок
-   * @param {number} index
+   * @param {string} path
+   * @return {number}
    */
   Gallery.prototype._getPictureIndex = function(path) {
     var idx = -1;
