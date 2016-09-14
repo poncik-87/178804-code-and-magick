@@ -67,6 +67,16 @@ define(function() {
           toObjectProto[key] = fromObjectProto[key];
         }
       }
+    },
+
+    /**
+     * Получение относительного пути URL-а
+     * @param {string} url
+     */
+    getPathname: function(url) {
+      var tmpA = document.createElement('a');
+      tmpA.href = url;
+      return tmpA.pathname;
     }
   };
 

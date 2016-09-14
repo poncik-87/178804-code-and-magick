@@ -1,6 +1,6 @@
 'use strict';
 
-define(['./form', './game', './gallery', './reviews'], function(form, Game, Gallery) {
+define(['./util', './form', './game', './gallery', './reviews'], function(util, form, Game, Gallery) {
 
   var game = initGame();
   initForm();
@@ -54,17 +54,19 @@ define(['./form', './game', './gallery', './reviews'], function(form, Game, Gall
     }
 
     var gallery = new Gallery(pictures);
+    gallery.create();
 
     for(i = 0; i < photogalleryImageElements.length; i++) {
-      photogalleryImageElements[i].onclick = showImageInGallery;
+      photogalleryImageElements[i].onclick = imageElementClicked;
     }
 
+    gallery.checkHash();
+
     /**
-     * Показывает виджет галереи для DOM элемента, который вызвал функцию в качестве колбэка
+     * Вставляет в хэш адресной строки картинку
      */
-    function showImageInGallery() {
-      var index = Number(this.getAttribute('data-idx'));
-      gallery.create(index);
+    function imageElementClicked() {
+      location.hash = '#photo' + util.getPathname(this.src);
     }
   }
 });

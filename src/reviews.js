@@ -1,6 +1,6 @@
 'use strict';
 
-define(['./load', './review', './ReviewData'], function(load, Review, ReviewData) {
+define(['./load', './review', './reviewData'], function(load, Review, ReviewData) {
   /**
    *@constant
    *@type {string}

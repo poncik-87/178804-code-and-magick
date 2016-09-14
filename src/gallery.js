@@ -8,6 +8,12 @@ define(['./util', './domComponent'], function(util, DOMComponent) {
   var INVISIBLE = 'invisible';
 
   /**
+   *@constant
+   *@type {string}
+   */
+  var HASH_PHOTO = '#photo';
+
+  /**
    * @class
    * @classdesc Виджет галереи скриншотов
    * @param {Array} pictures
@@ -20,6 +26,19 @@ define(['./util', './domComponent'], function(util, DOMComponent) {
     }
 
     this.activePicture = 0;
+  }
+
+  util.inherit(Gallery, DOMComponent);
+
+  /**
+   * Обработка создания виджета
+   */
+  Gallery.prototype.create = function() {
+    this.hide = this.hide.bind(this);
+    this._onControlLeftClicked = this._onControlLeftClicked.bind(this);
+    this._onControlRightClicked = this._onControlRightClicked.bind(this);
+    this._onHashChange = this._onHashChange.bind(this);
+
     this.element = document.querySelector('.overlay-gallery');
     this.controlLeftElement = document.querySelector('.overlay-gallery-control-left');
     this.controlRightElement = document.querySelector('.overlay-gallery-control-right');
@@ -30,64 +49,80 @@ define(['./util', './domComponent'], function(util, DOMComponent) {
 
     this.previewNumberTotalElement.innerHTML = this.pictures.length;
 
-    this.remove = this.remove.bind(this);
-    this._onControlLeftClicked = this._onControlLeftClicked.bind(this);
-    this._onControlRightClicked = this._onControlRightClicked.bind(this);
-  }
+    this.closeElement.addEventListener('click', this.hide);
+    this.controlLeftElement.addEventListener('click', this._onControlLeftClicked);
+    this.controlRightElement.addEventListener('click', this._onControlRightClicked);
+    window.addEventListener('hashchange', this._onHashChange);
+  };
 
-  util.inherit(Gallery, DOMComponent);
+  /**
+   * Обработка удаления виджета
+   */
+  Gallery.prototype.remove = function() {
+    this.closeElement.removeEventListener('click', this.hide);
+    this.controlLeftElement.removeEventListener('click', this._onControlLeftClicked);
+    this.controlRightElement.removeEventListener('click', this._onControlRightClicked);
+    window.removeEventListener('hashchange', this._onHashChange);
+
+    this.element = null;
+    this.controlLeftElement = null;
+    this.controlRightElement = null;
+    this.previewNumberCurrentElement = null;
+    this.previewNumberTotalElement = null;
+    this.closeElement = null;
+    this.previewElement = null;
+
+    this.hide = null;
+    this._onControlLeftClicked = null;
+    this._onControlRightClicked = null;
+    this._onHashChange = null;
+  };
 
   /**
    * Показывает виджет
-   * @param {number} index
    */
-  Gallery.prototype.create = function(index) {
+  Gallery.prototype.show = function() {
     this.element.classList.remove(INVISIBLE);
-
-    this.closeElement.addEventListener('click', this.remove);
-    this.controlLeftElement.addEventListener('click', this._onControlLeftClicked);
-    this.controlRightElement.addEventListener('click', this._onControlRightClicked);
-
-    this.setActivePicture(index);
-    this._setControlsVisible();
+    this.setActivePicture();
   };
 
   /**
    * Скрывает виджет
    */
-  Gallery.prototype.remove = function() {
+  Gallery.prototype.hide = function() {
     this.element.classList.add(INVISIBLE);
-
-    this.closeElement.removeEventListener('click', this.remove);
-    this.controlLeftElement.removeEventListener('click', this._onControlLeftClicked);
-    this.controlRightElement.removeEventListener('click', this._onControlRightClicked);
+    location.hash = '';
   };
 
   /**
    * Назначает картинку для отображения
-   * @param {number} index
    */
-  Gallery.prototype.setActivePicture = function(index) {
-    if(index < 0 || index >= this.pictures.length) {
+  Gallery.prototype.setActivePicture = function() {
+    var idx = this._getPictureIndex(location.hash);
+
+    if(idx >= 0 && idx < this.pictures.length) {
+      this.activePicture = idx;
+
+      var currentPicture = this.pictures[idx];
+
+      var prevImage = this.previewElement.querySelector('img');
+      if(prevImage) {
+        this.previewElement.removeChild(prevImage);
+      }
+
+      var image = new Image();
+      image.onload = (function(evt) {
+        this.previewElement.appendChild(evt.target);
+      }).bind(this);
+      image.src = currentPicture;
+
+      this.previewNumberCurrentElement.innerHTML = idx + 1;
+
+      this._setControlsVisible();
+    }else {
+      this.hide();
       return;
     }
-
-    this.activePicture = index;
-
-    var currentPicture = this.pictures[index];
-
-    var prevImage = this.previewElement.querySelector('img');
-    if(prevImage) {
-      this.previewElement.removeChild(prevImage);
-    }
-
-    var image = new Image();
-    image.onload = (function(evt) {
-      this.previewElement.appendChild(evt.target);
-    }).bind(this);
-    image.src = currentPicture;
-
-    this.previewNumberCurrentElement.innerHTML = index + 1;
   };
 
   /**
@@ -111,10 +146,8 @@ define(['./util', './domComponent'], function(util, DOMComponent) {
    */
   Gallery.prototype._onControlLeftClicked = function() {
     if(this.activePicture > 0) {
-      this.setActivePicture(this.activePicture - 1);
+      location.hash = HASH_PHOTO + util.getPathname(this.pictures[this.activePicture - 1]);
     }
-
-    this._setControlsVisible();
   };
 
   /**
@@ -122,10 +155,47 @@ define(['./util', './domComponent'], function(util, DOMComponent) {
    */
   Gallery.prototype._onControlRightClicked = function() {
     if(this.activePicture < this.pictures.length - 1) {
-      this.setActivePicture(this.activePicture + 1);
+      location.hash = HASH_PHOTO + util.getPathname(this.pictures[this.activePicture + 1]);
+    }
+  };
+
+  /**
+   * Обработка изменения хэша адресной строки
+   */
+  Gallery.prototype._onHashChange = function() {
+    this.checkHash();
+  };
+
+  /**
+   * Обработка значения хэша
+   */
+  Gallery.prototype.checkHash = function() {
+    if(location.hash.match(/#photo\/(\S+)/)) {
+      this.show();
+    } else {
+      this.hide();
+    }
+  };
+
+  /**
+   * Получить индекс картинки в массиве картинок
+   * @param {number} index
+   */
+  Gallery.prototype._getPictureIndex = function(path) {
+    var idx = -1;
+
+    if (path.indexOf(HASH_PHOTO) === 0) {
+      path = path.substr(HASH_PHOTO.length);
     }
 
-    this._setControlsVisible();
+    for(var i = 0; i < this.pictures.length; i++) {
+      if(util.getPathname(this.pictures[i]) === path) {
+        idx = i;
+        break;
+      }
+    }
+
+    return idx;
   };
 
   return Gallery;
