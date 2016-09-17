@@ -13,25 +13,34 @@ define(function() {
     var filter = parameters.filter || 'reviews-all';
     requestUrl += '?from=' + from + '&to=' + to + '&filter=' + filter;
 
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', requestUrl);
-    xhr.timeout = 2000;
+    var promise = new Promise(function(resolve, reject) {
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', requestUrl);
+      xhr.timeout = 2000;
 
-    xhr.onload = function() {
-      if (this.status === 200) {
-        callback(JSON.parse(this.responseText));
-      } else {
-        handleError(this.statusText);
-      }
-    };
-    xhr.onerror = function() {
-      handleError(this.statusText);
-    };
-    xhr.ontimeout = function() {
-      handleError('Loading data has timed out.');
-    };
+      xhr.onload = function() {
+        if (this.status === 200) {
+          resolve(JSON.parse(this.responseText));
+        } else {
+          reject(this.statusText);
+        }
+      };
+      xhr.onerror = function() {
+        reject(this.statusText);
+      };
+      xhr.ontimeout = function() {
+        reject('Loading data has timed out.');
+      };
 
-    xhr.send();
+      xhr.send();
+    });
+
+    promise.then(function(response) {
+      callback(response);
+    },
+    function(error) {
+      handleError(error);
+    });
   }
 
   /**
